@@ -1,6 +1,6 @@
-import bullLionel from "@/assets/bull-lionel.jpg";
-import bullKylian from "@/assets/bull-kylian.jpg";
-import bullCristiano from "@/assets/bull-cristiano.jpg";
+import bullLionel from "@/assets/lionelBull-yellow.svg";
+import bullKylian from "@/assets/kylianBull-blue.svg";
+import bullCristiano from "@/assets/cristianoBull-red.svg";
 
 export const INITIAL_PLAYERS = [
   {
@@ -8,8 +8,8 @@ export const INITIAL_PLAYERS = [
     name: "Lionel Bull",
     nation: "Argentina",
     flag: "🇦🇷",
-    ticker: "LIOBULL",
-    accent: "#5BA3D0",
+    ticker: "LIONBULL",
+    accent: "#FBBF24",
     contract: "Soon",
     pairAddress: "", // DexScreener Solana pair address
     img: bullLionel,
@@ -18,6 +18,8 @@ export const INITIAL_PLAYERS = [
     price: 0.00412,
     volume24h: 980_000,
     change24h: 12.4,
+    tokensBurned: 18_500_000,
+    liveHolders: 14_200,
   },
   {
     id: "kylian",
@@ -33,6 +35,8 @@ export const INITIAL_PLAYERS = [
     price: 0.00364,
     volume24h: 1_240_000,
     change24h: -4.1,
+    tokensBurned: 12_400_000,
+    liveHolders: 16_800,
   },
   {
     id: "cristiano",
@@ -48,5 +52,7 @@ export const INITIAL_PLAYERS = [
     price: 0.00298,
     volume24h: 760_000,
     change24h: 6.7,
+    tokensBurned: 22_100_000,
+    liveHolders: 8_900,
   },
 ];

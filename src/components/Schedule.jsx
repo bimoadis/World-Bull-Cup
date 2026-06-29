@@ -5,7 +5,7 @@ import SectionHead from "./SectionHead";
 export default function Schedule() {
   return (
     <section id="schedule" className="section">
-      <SectionHead kicker="The Run" title="FIXTURES" />
+      <SectionHead kicker="The Run" title="MATCHES" />
       <div className="fixtures">
         {FIXTURES.map((f, i) => (
           <div key={i} className="fixture wbc-fixture">
