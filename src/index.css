@@ -73,25 +73,29 @@ body { background: var(--color-bg); color: var(--color-text); font-family: 'Inte
 .kicker { font-size: 12px; letter-spacing: 0.22em; color: var(--color-gold); text-transform: uppercase; font-weight: 600; margin-bottom: 10px; }
 .sectionTitle { font-size: clamp(32px, 5vw, 52px); font-weight: 700; letter-spacing: 0.01em; }
 
-/* Board */
-.boardMeta { font-size: 13px; color: var(--color-mute); margin-bottom: 24px; max-width: 600px; padding: 0 24px;}
-.refreshBtn { background: transparent; border: 1px solid var(--color-line); color: var(--color-mute); font-family: 'JetBrains Mono', monospace; font-size: 13px; padding: 9px 16px; border-radius: 2px; cursor: pointer; transition: all 0.2s ease; }
-.table { border: 1px solid var(--color-line); border-radius: 4px; overflow: hidden; margin: 0 24px;}
-.theadRow { display: grid; grid-template-columns: 40px 2.4fr 1.1fr 1fr 0.9fr 0.8fr 0.8fr 0.8fr; gap: 12px; padding: 14px 20px; background: #101012; border-bottom: 1px solid var(--color-line); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-mute); font-weight: 600; align-items: center; }
-.trow { display: grid; grid-template-columns: 40px 2.4fr 1.1fr 1fr 0.9fr 0.8fr 0.8fr 0.8fr; gap: 12px; padding: 18px 20px; border-bottom: 1px solid var(--color-line); background: var(--color-card); align-items: center; transition: background 0.15s ease; }
-.rank { font-family: 'JetBrains Mono', monospace; color: var(--color-gold); font-size: 15px; font-weight: 700; }
-.playerCell { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.avatar { width: 46px; height: 46px; border-radius: 4px; border: 2px solid; background: #000; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
-.avatarImg { width: 100%; height: 100%; object-fit: cover; }
-.avatarPlaceholder { color: #3A3A40; font-size: 22px; }
-.avatarPlaceholderLg { color: #3A3A40; font-size: 40px; }
-.playerName { font-size: 17px; font-weight: 600; line-height: 1.1; }
-.playerMeta { font-size: 12px; color: var(--color-mute); margin-top: 3px; }
-.tNum { text-align: right; font-size: 14px; }
-.strong { font-weight: 700; color: var(--color-text); }
-.odds { font-weight: 700; color: var(--color-text); font-size: 15px; }
-.oddsFav { color: var(--color-gold); }
-.tradeMini { display: inline-block; border: 1px solid var(--color-line); color: var(--color-mute); text-decoration: none; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 2px; transition: all 0.2s ease; }
+/* Squad Board */
+.squadSection { max-width: 1180px; margin: 0 auto; padding: 80px 0; }
+.squadMeta { font-size: 13px; color: var(--color-mute); margin-bottom: 32px; max-width: 800px; padding: 0 24px; line-height: 1.5; }
+.squadRefreshBtn { background: #f1c40f; border: none; color: #141416; font-weight: 700; font-size: 13px; padding: 10px 20px; border-radius: 30px; cursor: pointer; transition: transform 0.2s ease; font-family: 'Inter', sans-serif;}
+.squadRefreshBtn:hover { transform: translateY(-2px); border-color: transparent !important; color: #000 !important; }
+.squadGrid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); padding: 0 24px; }
+.squadCard { background: var(--color-card); border: 1px solid var(--color-line); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 16px; transition: border-color 0.2s ease, transform 0.2s ease; }
+.squadCard:hover { border-color: #4FB47755; transform: translateY(-4px); }
+.squadHeader { display: flex; align-items: center; justify-content: space-between; }
+.squadHeaderLeft { display: flex; align-items: center; gap: 10px; }
+.squadFlag { font-size: 24px; }
+.squadNation { font-size: 22px; font-weight: 700; color: var(--color-text); margin-top: 2px;}
+.squadTradeBtn { background: #27ae60; color: #fff; text-decoration: none; font-size: 12px; font-weight: 600; padding: 6px 16px; border-radius: 20px; transition: background 0.2s ease; }
+.squadTradeBtn:hover { background: #2ecc71; }
+.squadStatsRow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.squadStatBox { border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+/* Dark theme adaptations */
+.squadStatBox--green { background: rgba(46, 204, 113, 0.05); border: 1px solid rgba(46, 204, 113, 0.1); }
+.squadStatBox--yellow { background: rgba(241, 196, 15, 0.05); border: 1px solid rgba(241, 196, 15, 0.1); }
+.squadStatLabel { font-size: 12px; color: var(--color-mute); }
+.squadStatValue { font-size: 20px; font-weight: 700; color: var(--color-text); }
+.squadStatValue--small { font-size: 16px; }
+.squadContract { font-size: 10px; color: #5E5E64; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 4px; }
 
 /* Versus */
 .versusList { max-width: 1180px; margin: 0 auto; padding: 0 24px; display: flex; flex-direction: column; gap: 28px; }

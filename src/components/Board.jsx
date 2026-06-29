@@ -1,82 +1,55 @@
 import React from "react";
-import { fmtUSD, fmtPrice, shareToOdds } from "../utils";
+import { fmtUSD } from "../utils";
 import SectionHead from "./SectionHead";
 
 export default function Board({ players, totalMcap, ranked, onRefresh, lastUpdate, refreshing }) {
   return (
-    <section id="board" className="section">
+    <section id="board" className="section squadSection">
       <SectionHead
         kicker="The Card"
-        title="ODDS BOARD"
+        title="SQUAD BOARD"
         right={
-          <button className="refreshBtn wbc-refresh" onClick={onRefresh}>
-            {refreshing ? "↻ syncing" : "↻ refresh"}
+          <button className="squadRefreshBtn wbc-refresh" onClick={onRefresh}>
+            {refreshing ? "↻ syncing" : "↻ Refresh prices"}
           </button>
         }
       />
-      <div className="boardMeta">
-        Sorted by market cap. Odds = inverse of each coin's market-cap share.
-        Updated {lastUpdate.toLocaleTimeString()}.
+      <div className="squadMeta">
+        Sorted by market cap (highest first). Figures refresh about every 30 seconds. 24h volume is a rolling window from DexScreener, summed across all Solana pools for each coin (not a daily reset at midnight).
       </div>
 
-      <div className="table">
-        <div className="theadRow wbc-thead">
-          <div>#</div>
-          <div>Player</div>
-          <div className="tNum">Market cap</div>
-          <div className="tNum">Price</div>
-          <div className="tNum">24h</div>
-          <div className="tNum">Odds</div>
-          <div className="tNum">Share</div>
-          <div></div>
-        </div>
-
-        {ranked.map((p, i) => {
-          const share = p.marketCap / totalMcap;
-          const up = p.change24h >= 0;
+      <div className="squadGrid">
+        {ranked.map((p) => {
           return (
-            <div key={p.id} className="trow wbc-trow">
-              <div className="rank">{i === 0 ? "★" : i + 1}</div>
-
-              <div className="playerCell">
-                <div className="avatar" style={{ borderColor: p.accent }}>
-                  {p.img ? (
-                    <img src={p.img} alt={p.name} className="avatarImg" />
-                  ) : (
-                    <span className="avatarPlaceholder">▟</span>
-                  )}
+            <div key={p.id} className="squadCard">
+              <div className="squadHeader">
+                <div className="squadHeaderLeft">
+                  <span className="squadFlag">{p.flag}</span>
+                  <span className="wbc-display squadNation">{p.nation.toUpperCase()}</span>
                 </div>
-                <div>
-                  <div className="wbc-display playerName">{p.name}</div>
-                  <div className="playerMeta">
-                    {p.flag} {p.nation} · ${p.ticker}
-                  </div>
+                <a href="#" className="squadTradeBtn">Trade</a>
+              </div>
+              
+              <div className="squadStatsRow">
+                <div className="squadStatBox squadStatBox--green">
+                  <div className="squadStatLabel">Market cap</div>
+                  <div className="wbc-mono squadStatValue">{fmtUSD(p.marketCap)}</div>
+                </div>
+                <div className="squadStatBox squadStatBox--green">
+                  <div className="squadStatLabel">24h volume</div>
+                  <div className="wbc-mono squadStatValue">{fmtUSD(p.volume24h)}</div>
                 </div>
               </div>
 
-              <div className="wbc-mono tNum strong">
-                {fmtUSD(p.marketCap)}
-              </div>
-              <div className="wbc-mono tNum">{fmtPrice(p.price)}</div>
-              <div
-                className="wbc-mono tNum"
-                style={{ color: up ? "var(--color-up)" : "var(--color-down)" }}
-              >
-                {up ? "▲" : "▼"} {Math.abs(p.change24h).toFixed(1)}%
-              </div>
-              <div
-                className={`wbc-mono tNum odds ${i === 0 ? "oddsFav" : ""}`}
-              >
-                {shareToOdds(share)}
-              </div>
-              <div className="wbc-mono tNum">
-                {(share * 100).toFixed(1)}%
+              <div className="squadStatBox squadStatBox--yellow">
+                <div className="squadStatLabel">Price</div>
+                <div className="wbc-mono squadStatValue squadStatValue--small">
+                  ${p.price.toFixed(8).replace(/\.?0+$/, '')}
+                </div>
               </div>
 
-              <div className="tNum">
-                <a href="#" className="tradeMini wbc-trademini">
-                  Trade
-                </a>
+              <div className="squadContract wbc-mono">
+                {p.pairAddress || p.contract || "Contract: Soon"}
               </div>
             </div>
           );
