@@ -1,3 +1,7 @@
+import bullLionel from "@/assets/bull-lionel.jpg";
+import bullKylian from "@/assets/bull-kylian.jpg";
+import bullCristiano from "@/assets/bull-cristiano.jpg";
+
 export const INITIAL_PLAYERS = [
   {
     id: "lionel",
@@ -8,7 +12,7 @@ export const INITIAL_PLAYERS = [
     accent: "#5BA3D0",
     contract: "Soon",
     pairAddress: "", // DexScreener Solana pair address
-    img: "", // your bull edit goes here
+    img: bullLionel,
     // DUMMY values:
     marketCap: 4_120_000,
     price: 0.00412,
@@ -24,7 +28,7 @@ export const INITIAL_PLAYERS = [
     accent: "#4F6BED",
     contract: "Soon",
     pairAddress: "",
-    img: "",
+    img: bullKylian,
     marketCap: 3_640_000,
     price: 0.00364,
     volume24h: 1_240_000,
@@ -39,7 +43,7 @@ export const INITIAL_PLAYERS = [
     accent: "#C0392B",
     contract: "Soon",
     pairAddress: "",
-    img: "",
+    img: bullCristiano,
     marketCap: 2_980_000,
     price: 0.00298,
     volume24h: 760_000,
