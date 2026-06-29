@@ -195,7 +195,7 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
                   <Link to="/$playerId" params={{ playerId: b.id }} className="flex min-w-0 items-center gap-4 hover:opacity-80 transition-opacity relative z-10">
                     <div className="h-10 w-10 shrink-0 rounded-md border flex items-center justify-center overflow-hidden bg-black/50"
                       style={{ borderColor: b.rank === 1 ? b.accent : `${b.accent}40`, boxShadow: b.rank === 1 ? `0 0 10px ${b.accent}40` : 'none' }}>
-                      <img src={b.img} alt={b.name} className="h-full w-full object-cover" loading="lazy" />
+                      <img src={b.img} alt={b.name} className="h-full w-full object-cover" decoding="async" fetchPriority={b.rank <= 3 ? "high" : "auto"} />
                     </div>
                     <div className="min-w-0">
                       <div className="truncate font-display text-sm font-bold text-white">{b.name}</div>
@@ -432,7 +432,7 @@ function Index() {
         <section className="relative overflow-hidden border-b border-white/5 bg-[#0D0E10]">
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-0 right-0 w-2/3 h-full mix-blend-screen opacity-90">
-              <img src={arenaHero} alt="Arena" className="w-full h-full object-cover [mask-image:linear-gradient(to_left,black,transparent)]" />
+              <img src={arenaHero} alt="Arena" className="w-full h-full object-cover [mask-image:linear-gradient(to_left,black,transparent)]" fetchPriority="high" decoding="async" />
             </div>
             <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0B] via-[#0A0A0B]/80 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0B] via-transparent to-transparent" />
@@ -555,8 +555,8 @@ function Index() {
 
                     {/* Match Card */}
                     <div className={`rounded-xl border bg-[#121316] p-5 relative overflow-hidden group transition-all duration-300 ${i === 0
-                        ? 'border-gold shadow-[0_0_15px_rgba(252,211,77,0.15)] hover:shadow-[0_0_30px_rgba(252,211,77,0.6)] hover:-translate-y-1 cursor-pointer'
-                        : 'border-white/5 hover:border-white/10'
+                      ? 'border-gold shadow-[0_0_15px_rgba(252,211,77,0.15)] hover:shadow-[0_0_30px_rgba(252,211,77,0.6)] hover:-translate-y-1 cursor-pointer'
+                      : 'border-white/5 hover:border-white/10'
                       }`}>
                       {f.status && (
                         <div className="absolute bottom-5 right-5 text-center">
