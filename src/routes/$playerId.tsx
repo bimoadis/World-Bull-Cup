@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Trophy, Zap } from "lucide-react";
+import logo from "@/assets/logo.png";
 import { INITIAL_PLAYERS } from "@/data/players";
 import { useLiveData } from "@/hooks/useLiveData";
 import { fmtUSD, fmtPrice } from "@/utils";
@@ -49,9 +50,7 @@ function PlayerDetail() {
             </Link>
             <div className="h-6 w-px bg-white/10" />
             <div className="flex items-center gap-3">
-              <div className="text-gold">
-                <Trophy className="h-5 w-5" strokeWidth={2} />
-              </div>
+              <img src={logo} alt="World Bull Cup Logo" className="h-6 w-auto" />
               <span className="font-display text-lg font-bold tracking-widest text-white uppercase hidden sm:inline-block">
                 WORLD BULL CUP
               </span>

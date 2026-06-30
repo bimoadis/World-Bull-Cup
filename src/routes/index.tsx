@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Trophy, TrendingUp, TrendingDown, Menu, Zap, User, RefreshCw, CheckSquare, Square, Users } from "lucide-react";
 // @ts-ignore
 import arenaHero from "@/assets/arena-bg.png";
+import logo from "@/assets/logo.png";
 import { INITIAL_PLAYERS } from "@/data/players";
 import { useLiveData } from "@/hooks/useLiveData";
 import { shareToOdds, fmtUSD, fmtPrice } from "@/utils";
@@ -391,9 +392,7 @@ function Index() {
       <header className="sticky top-0 z-50 bg-[#0A0A0B]/95 backdrop-blur border-b border-white/5">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
-            <div className="text-gold">
-              <Trophy className="h-6 w-6" strokeWidth={2} />
-            </div>
+            <img src={logo} alt="World Bull Cup Logo" className="h-8 w-auto" />
             <span className="font-display text-lg font-bold tracking-widest text-white uppercase">
               WORLD BULL CUP
             </span>
@@ -599,9 +598,7 @@ function Index() {
 
             <div className="md:col-span-1">
               <div className="flex items-center gap-3 mb-6">
-                <div className="text-gold">
-                  <Trophy className="h-6 w-6" />
-                </div>
+                <img src={logo} alt="World Bull Cup Logo" className="h-8 w-auto" />
                 <span className="font-display text-sm font-bold tracking-widest text-white uppercase">
                   WORLD BULL CUP
                 </span>

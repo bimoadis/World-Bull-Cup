@@ -1,11 +1,12 @@
 import React from "react";
+import logo from "../assets/logo.png";
 
 export default function Nav() {
   return (
     <nav className="nav">
       <div className="navInner">
-        <a href="#top" className="brand">
-          <span className="brandMark">▟</span>
+        <a href="#top" className="brand flex items-center gap-2">
+          <img src={logo} alt="World Bull Cup Logo" className="h-8 w-auto" />
           <span className="wbc-display brandText">
             WORLD&nbsp;BULL&nbsp;CUP
           </span>

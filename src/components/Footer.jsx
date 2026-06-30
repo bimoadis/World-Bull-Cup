@@ -1,10 +1,14 @@
 import React from "react";
+import logo from "../assets/logo.png";
 
 export default function Footer() {
   return (
     <footer className="footer">
       <div className="footerInner">
-        <div className="wbc-display footerBrand">WORLD BULL CUP</div>
+        <div className="wbc-display footerBrand flex items-center gap-2">
+          <img src={logo} alt="World Bull Cup Logo" className="h-8 w-auto" />
+          <span>WORLD BULL CUP</span>
+        </div>
         <p className="footerDisc">
           World Bull Cup is an independent fan project. Not affiliated with FIFA,
           the FIFA World Cup™, any player, federation, or Pump.fun. Nothing here
