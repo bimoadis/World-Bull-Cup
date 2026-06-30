@@ -621,7 +621,7 @@ function Index() {
 
           <div className="bg-[#121316] border border-white/5 rounded-xl px-6 py-4 inline-block self-start md:self-end">
             <div className="font-mono text-[12px] font-bold tracking-[0.2em] text-muted-foreground uppercase mb-2">NEXT ROUND IN</div>
-            <div className="font-mono text-[32px] leading-none font-bold text-gold flex gap-2 justify-center md:justify-end">
+            <div className={`font-mono text-[32px] leading-none font-bold flex gap-2 justify-center md:justify-end ${CHAMPIONSHIPS[activeTab].accentText}`}>
               <span>{timeLeft.d}<span className="text-sm text-muted-foreground ml-1">D</span></span> :
               <span>{timeLeft.h}<span className="text-sm text-muted-foreground ml-1">H</span></span> :
               <span>{timeLeft.m}<span className="text-sm text-muted-foreground ml-1">M</span></span> :
