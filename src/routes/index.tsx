@@ -206,16 +206,16 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
               {/* TABLE ROWS */}
               {ranked.map((b: any) => (
                 <div key={b.rank} className={`relative grid ${champ.showChart ? 'grid-cols-[50px_minmax(0,1.8fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_100px]' : 'grid-cols-[50px_minmax(0,1.8fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_100px]'} items-center gap-4 border-b border-white/5 px-6 py-4 transition-colors last:border-0 hover:bg-white/[0.02]`}
-                  style={b.rank === 1 ? { background: `linear-gradient(to right, ${b.accent}20, transparent)` } : {}}
+                  style={b.rank === 1 ? { background: `linear-gradient(to right, ${champ.accentHex}20, transparent)` } : {}}
                 >
                   {/* Left Border for rank 1 */}
                   {b.rank === 1 && (
-                    <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: b.accent, boxShadow: `0 0 10px ${b.accent}` }} />
+                    <div className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ background: champ.accentHex, boxShadow: `0 0 10px ${champ.accentHex}` }} />
                   )}
 
                   <div className="text-center relative z-10">
                     {b.rank === 1 ? (
-                      <span className="font-display text-xl font-black italic" style={{ color: b.accent, textShadow: `0 0 15px ${b.accent}` }}>1</span>
+                      <span className="font-display text-xl font-black italic" style={{ color: champ.accentHex, textShadow: `0 0 15px ${champ.accentHex}` }}>1</span>
                     ) : (
                       <span className="font-mono text-sm font-semibold text-muted-foreground/50">{b.rank}</span>
                     )}
@@ -224,7 +224,7 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
                   {/* @ts-ignore */}
                   <Link to="/$playerId" params={{ playerId: b.id }} className="flex min-w-0 items-center gap-4 hover:opacity-80 transition-opacity relative z-10">
                     <div className="h-10 w-10 shrink-0 rounded-md border flex items-center justify-center overflow-hidden bg-black/50"
-                      style={{ borderColor: b.rank === 1 ? b.accent : `${b.accent}40`, boxShadow: b.rank === 1 ? `0 0 10px ${b.accent}40` : 'none' }}>
+                      style={{ borderColor: b.rank === 1 ? champ.accentHex : `${champ.accentHex}40`, boxShadow: b.rank === 1 ? `0 0 10px ${champ.accentHex}40` : 'none' }}>
                       <img src={b.img} alt={b.name} className="h-full w-full object-cover" decoding="async" fetchPriority={b.rank <= 3 ? "high" : "auto"} />
                     </div>
                     <div className="min-w-0">
@@ -262,7 +262,7 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
                     <a href={b.contract !== "Soon" ? `https://pump.fun/${b.contract}` : "https://pump.fun"} target="_blank" rel="noreferrer"
                       className="inline-block rounded border px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-colors"
                       style={b.rank === 1
-                        ? { borderColor: b.accent, color: b.accent, backgroundColor: `${b.accent}15` }
+                        ? { borderColor: champ.accentHex, color: champ.accentHex, backgroundColor: `${champ.accentHex}15` }
                         : { borderColor: 'rgba(255,255,255,0.1)', color: 'hsl(var(--muted-foreground))', backgroundColor: 'transparent' }
                       }
                     >

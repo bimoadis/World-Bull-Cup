@@ -1,5 +1,5 @@
-import bullLionel from "@/assets/lionelBull-yellow.svg";
-import bullKylian from "@/assets/kylianBull-blue.svg";
+import bullLionel from "@/assets/lionelBull-blue.svg";
+import bullKylian from "@/assets/kylianBull-royalblue.svg";
 import bullCristiano from "@/assets/cristianoBull-red.svg";
 import bullLamine from "@/assets/laminebull-yellow.svg";
 
@@ -10,7 +10,7 @@ export const INITIAL_PLAYERS = [
     nation: "Argentina",
     flag: "🇦🇷",
     ticker: "LIONBULL",
-    accent: "#FBBF24",
+    accent: "#5BA3D0",
     contract: "Soon",
     pairAddress: "", // DexScreener Solana pair address
     img: bullLionel,
