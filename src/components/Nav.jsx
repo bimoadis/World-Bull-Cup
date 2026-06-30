@@ -14,7 +14,7 @@ export default function Nav() {
         <div className="navLinks wbc-navlinks">
           <a href="#board" className="navLink wbc-navlink">Board</a>
           <a href="#versus" className="navLink wbc-navlink">Versus</a>
-          <a href="#schedule" className="navLink wbc-navlink">Matches</a>
+          {/* <a href="#schedule" className="navLink wbc-navlink">Matches</a> */}
           <a href="#" className="navCta wbc-navcta">Trade ↗</a>
         </div>
       </div>

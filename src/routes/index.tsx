@@ -40,7 +40,11 @@ const CHAMPIONSHIPS = [
     accentHex: "#EAB308", // gold
     formatData: fmtUSD,
     unit: "MARKET CAP",
-    showChart: true
+    showChart: true,
+    history: [
+      { round: "Round 1", winner: "Lionel Bull", val: "$42.5M", date: "Jun 26, 2026" },
+      { round: "Round 2", winner: "Cristiano Bull", val: "$48.2M", date: "Jun 28, 2026" }
+    ]
   },
   {
     id: "BURN",
@@ -54,7 +58,11 @@ const CHAMPIONSHIPS = [
     accentHex: "#E8602C", // fire
     formatData: (n: number) => `${(n / 1_000_000).toFixed(1)}M`,
     unit: "TOKENS BURNED",
-    showChart: false
+    showChart: false,
+    history: [
+      { round: "Round 1", winner: "Kylian Bull", val: "12.5M", date: "Jun 26, 2026" },
+      { round: "Round 2", winner: "Lionel Bull", val: "14.1M", date: "Jun 28, 2026" }
+    ]
   },
   {
     id: "HOLDERS",
@@ -68,7 +76,11 @@ const CHAMPIONSHIPS = [
     accentHex: "#4F8FE8", // blue
     formatData: (n: number) => n.toLocaleString(),
     unit: "HOLDERS",
-    showChart: false
+    showChart: false,
+    history: [
+      { round: "Round 1", winner: "Cristiano Bull", val: "8,420", date: "Jun 26, 2026" },
+      { round: "Round 2", winner: "Kylian Bull", val: "9,150", date: "Jun 28, 2026" }
+    ]
   }
 ];
 
@@ -332,6 +344,34 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
             ))}
           </div>
         </section>
+
+        {/* PAST WINNERS HISTORY */}
+        {champ.history && champ.history.length > 0 && (
+          <section className="mb-8 mt-16">
+            <div className="mb-8">
+              <div className={`font-mono text-[10px] font-bold tracking-[0.2em] ${champ.accentText} uppercase mb-1`}>HALL OF FAME</div>
+              <h2 className="font-display text-3xl font-extrabold text-white">PAST WINNERS</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {champ.history.map((h: any, i: number) => (
+                <div key={i} className="rounded-xl border border-white/5 bg-[#121316] p-5 flex flex-row items-center justify-between group hover:bg-white/[0.02] transition-colors" style={{ borderLeft: `4px solid ${champ.accentHex}` }}>
+                  <div>
+                    <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider mb-2">{h.round} • {h.date}</div>
+                    <div className="font-display text-xl font-bold text-white flex items-center gap-2">
+                      <Trophy className="h-4 w-4" style={{ color: champ.accentHex }} />
+                      {h.winner}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-mono text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Winning {champ.unit}</div>
+                    <div className="font-mono text-lg font-bold" style={{ color: champ.accentHex }}>{h.val}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );
@@ -342,20 +382,14 @@ function Index() {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
 
-  // Countdown timer logic
-  const targetDate = new Date("2026-07-04T14:00:00Z").getTime();
+  // Countdown timer logic (48 hours, resets at 00:00 UTC)
   const [timeLeft, setTimeLeft] = useState({ d: "00", h: "00", m: "00", s: "00" });
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = targetDate - now;
-
-      if (distance < 0) {
-        clearInterval(timer);
-        setTimeLeft({ d: "00", h: "00", m: "00", s: "00" });
-        return;
-      }
+      const now = Date.now();
+      const cycle = 48 * 60 * 60 * 1000;
+      const distance = cycle - (now % cycle);
 
       const d = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, "0");
       const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, "0");
@@ -410,7 +444,8 @@ function Index() {
                 {champ.id}
               </button>
             ))}
-            <a href="#matches" className="hover:text-foreground py-5 transition-colors">Matches</a>
+            {/* Hiding Matches link */}
+            {/* <a href="#matches" className="hover:text-foreground py-5 transition-colors">Matches</a> */}
           </nav>
           <div className="flex items-center gap-4">
             <a href="https://pump.fun" target="_blank" rel="noreferrer" className="hidden items-center gap-2 rounded border border-gold/30 bg-transparent px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-gold transition-colors hover:bg-gold/10 sm:inline-flex">
@@ -481,21 +516,33 @@ function Index() {
           </div>
         </section>
 
-        {/* CHAMPIONSHIP TABS */}
-        <div className="mx-auto max-w-7xl px-6 pt-16 flex flex-wrap gap-4">
-          {CHAMPIONSHIPS.map((champ, i) => (
-            <button
-              key={champ.id}
-              onClick={() => setActiveTab(i)}
-              className={`px-6 py-2.5 rounded-full font-mono text-[10px] font-bold uppercase tracking-[0.15em] transition-all border ${activeTab === i
-                ? `${champ.accentBg} ${champ.accentBorder} text-black shadow-[0_0_15px_rgba(0,0,0,0.5)]`
-                : `bg-[#121316] border-white/5 text-muted-foreground hover:border-white/20 hover:text-white`
-                }`}
-              style={activeTab === i ? { boxShadow: `0 0 15px ${champ.accentHex}40` } : {}}
-            >
-              {champ.title}
-            </button>
-          ))}
+        {/* CHAMPIONSHIP TABS & COUNTDOWN */}
+        <div className="mx-auto max-w-7xl px-6 pt-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="flex flex-wrap gap-4">
+            {CHAMPIONSHIPS.map((champ, i) => (
+              <button
+                key={champ.id}
+                onClick={() => setActiveTab(i)}
+                className={`px-6 py-2.5 rounded-full font-mono text-[10px] font-bold uppercase tracking-[0.15em] transition-all border ${activeTab === i
+                  ? `${champ.accentBg} ${champ.accentBorder} text-black shadow-[0_0_15px_rgba(0,0,0,0.5)]`
+                  : `bg-[#121316] border-white/5 text-muted-foreground hover:border-white/20 hover:text-white`
+                  }`}
+                style={activeTab === i ? { boxShadow: `0 0 15px ${champ.accentHex}40` } : {}}
+              >
+                {champ.title}
+              </button>
+            ))}
+          </div>
+
+          <div className="bg-[#121316] border border-white/5 rounded-xl px-6 py-4 inline-block self-start md:self-end">
+            <div className="font-mono text-[12px] font-bold tracking-[0.2em] text-muted-foreground uppercase mb-2">NEXT ROUND IN</div>
+            <div className="font-mono text-[32px] leading-none font-bold text-gold flex gap-2 justify-center md:justify-end">
+              <span>{timeLeft.d}<span className="text-sm text-muted-foreground ml-1">D</span></span> :
+              <span>{timeLeft.h}<span className="text-sm text-muted-foreground ml-1">H</span></span> :
+              <span>{timeLeft.m}<span className="text-sm text-muted-foreground ml-1">M</span></span> :
+              <span>{timeLeft.s}<span className="text-sm text-muted-foreground ml-1">S</span></span>
+            </div>
+          </div>
         </div>
 
         <ChampionshipSection
@@ -507,87 +554,7 @@ function Index() {
         />
 
         <div className="mx-auto max-w-7xl px-6 py-16">
-          {/* MATCHES */}
-          <section id="matches" className="mb-24">
-            <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 text-center md:text-left">
-              <div>
-                <div className="font-mono text-[10px] font-bold tracking-[0.2em] text-gold uppercase mb-1">THE RUN</div>
-                <h2 className="font-display text-3xl font-extrabold text-white">MATCHES</h2>
-              </div>
-              <div className="bg-[#121316] border border-white/5 rounded-xl px-6 py-3 inline-block self-center md:self-end">
-                <div className="font-mono text-[9px] font-bold tracking-[0.2em] text-muted-foreground uppercase mb-1">NEXT MATCH IN</div>
-                <div className="font-mono text-2xl font-bold text-gold flex gap-2 justify-center">
-                  <span>{timeLeft.d}<span className="text-sm text-muted-foreground ml-1">D</span></span> :
-                  <span>{timeLeft.h}<span className="text-sm text-muted-foreground ml-1">H</span></span> :
-                  <span>{timeLeft.m}<span className="text-sm text-muted-foreground ml-1">M</span></span> :
-                  <span>{timeLeft.s}<span className="text-sm text-muted-foreground ml-1">S</span></span>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative">
-              {/* Timeline Line */}
-              <div className="hidden md:block absolute top-4 left-0 right-0 h-[1px] bg-white/10" />
-              {/* Timeline Line Active (Start to Round of 16) */}
-              <div className="hidden md:block absolute top-[15.5px] left-0 w-[12.5%] h-[2px] bg-gold shadow-[0_0_8px_rgba(252,211,77,0.8)] z-0" />
-
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative z-10">
-                {matchesData.map((f: any, i: number) => (
-                  <div key={i} className="relative pt-0 md:pt-10">
-                    {/* Timeline Node */}
-                    <div className="hidden md:flex absolute top-[15px] left-1/2 -translate-x-1/2 -translate-y-1/2 flex-col items-center">
-                      <div className={`h-2.5 w-2.5 rounded-full border-2 border-[#0A0A0B] ${i === 0 ? 'bg-gold shadow-[0_0_10px_rgba(252,211,77,0.5)]' : 'bg-white/30'}`} />
-                    </div>
-
-                    {/* Label */}
-                    <div className="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 -translate-y-8 whitespace-nowrap text-center">
-                      <span className={`font-mono text-[9px] font-bold tracking-[0.15em] uppercase ${i === 0 ? 'text-gold' : 'text-muted-foreground'}`}>
-                        {f.step}
-                      </span>
-                    </div>
-
-                    <div className="block md:hidden mb-2 text-center">
-                      <span className={`font-mono text-[9px] font-bold tracking-[0.15em] uppercase ${i === 0 ? 'text-gold' : 'text-muted-foreground'}`}>
-                        {f.step}
-                      </span>
-                    </div>
-
-                    {/* Match Card */}
-                    <div className={`rounded-xl border bg-[#121316] p-5 relative overflow-hidden group transition-all duration-300 ${i === 0
-                      ? 'border-gold shadow-[0_0_15px_rgba(252,211,77,0.15)] hover:shadow-[0_0_30px_rgba(252,211,77,0.6)] hover:-translate-y-1 cursor-pointer'
-                      : 'border-white/5 hover:border-white/10'
-                      }`}>
-                      {f.status && (
-                        <div className="absolute bottom-5 right-5 text-center">
-                          <Trophy className="h-10 w-10 text-white/5" />
-                        </div>
-                      )}
-
-                      <div className="space-y-4 relative z-10">
-                        <div className="flex items-center gap-3">
-                          <Square className="h-4 w-4 text-white/10" />
-                          <span className={`font-display text-sm font-bold ${i === 0 || i === 1 || i === 2 ? 'text-white' : 'text-muted-foreground'}`}>{f.a}</span>
-                        </div>
-                        <div className="font-mono text-[9px] text-muted-foreground/60 pl-1">VS</div>
-                        <div className="flex items-center gap-3">
-                          <Square className="h-4 w-4 text-white/10" />
-                          <span className={`font-display text-sm font-bold ${i === 0 || i === 1 || i === 2 ? 'text-white' : 'text-muted-foreground'}`}>{f.b}</span>
-                        </div>
-                      </div>
-
-                      <div className={`mt-6 pt-4 border-t ${i === 0 ? 'border-gold/50' : 'border-white/5'} flex flex-col relative z-10`}>
-                        <span className="font-mono text-[10px] text-muted-foreground">{f.date}</span>
-                        <span className="font-mono text-[10px] text-muted-foreground">{f.time}</span>
-                        {f.status && (
-                          <span className="mt-2 font-mono text-[9px] font-bold text-gold tracking-widest">{f.status}</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
+          {/* MATCHES SECTION HIDDEN */}
         </div>
       </main>
 
@@ -624,7 +591,7 @@ function Index() {
                     </button>
                   </li>
                 ))}
-                <li><a href="#matches" className="hover:text-gold transition-colors">MATCHES</a></li>
+                {/* <li><a href="#matches" className="hover:text-gold transition-colors">MATCHES</a></li> */}
               </ul>
             </div>
 
