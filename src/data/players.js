@@ -1,6 +1,7 @@
 import bullLionel from "@/assets/lionelBull-yellow.svg";
 import bullKylian from "@/assets/kylianBull-blue.svg";
 import bullCristiano from "@/assets/cristianoBull-red.svg";
+import bullLamine from "@/assets/laminebull-yellow.svg";
 
 export const INITIAL_PLAYERS = [
   {
@@ -54,5 +55,23 @@ export const INITIAL_PLAYERS = [
     change24h: 6.7,
     tokensBurned: 22_100_000,
     liveHolders: 8_900,
+  },
+  {
+    id: "lamine",
+    name: "Lamine Bull",
+    nation: "Spain",
+    flag: "🇪🇸",
+    ticker: "LAMBULL",
+    accent: "#E0B000",
+    contract: "Soon",
+    pairAddress: "",
+    img: bullLamine,
+    marketCap: 0,
+    price: 0,
+    volume24h: 0,
+    change24h: 0,
+    tokensBurned: 0,
+    liveHolders: 0,
+    debutDate: "2026-06-30T00:00:00Z",
   },
 ];

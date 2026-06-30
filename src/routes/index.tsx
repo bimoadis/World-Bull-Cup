@@ -3,6 +3,8 @@ import { Trophy, TrendingUp, TrendingDown, Menu, Zap, User, RefreshCw, CheckSqua
 // @ts-ignore
 import arenaHero from "@/assets/arena-bg.png";
 import logo from "@/assets/logo.png";
+// @ts-ignore
+import bannerBg from "@/assets/banner-bg.png";
 import { INITIAL_PLAYERS } from "@/data/players";
 import { useLiveData } from "@/hooks/useLiveData";
 import { shareToOdds, fmtUSD, fmtPrice } from "@/utils";
@@ -116,11 +118,13 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
   }, [players, champ]);
 
   const versus = useMemo(() => {
-    return [
-      { a: ranked[0], b: ranked[1] },
-      { a: ranked[0], b: ranked[2] },
-      { a: ranked[1], b: ranked[2] },
-    ].map((match, index) => {
+    const pairs = [];
+    for (let i = 0; i < ranked.length; i++) {
+      for (let j = i + 1; j < ranked.length; j++) {
+        pairs.push({ a: ranked[i], b: ranked[j] });
+      }
+    }
+    const mappedPairs = pairs.map((match, index) => {
       let a = match.a;
       let b = match.b;
 
@@ -140,12 +144,25 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
         pctB = 42;
       }
 
+      // Check if matchup involves a new player (within 5 days)
+      const isNewA = a?.debutDate && new Date().getTime() - new Date(a.debutDate).getTime() < 5 * 24 * 60 * 60 * 1000;
+      const isNewB = b?.debutDate && new Date().getTime() - new Date(b.debutDate).getTime() < 5 * 24 * 60 * 60 * 1000;
+      const isNewMatchup = isNewA || isNewB;
+
       return {
         a,
         b,
         pctA,
         pctB,
+        isNewMatchup
       };
+    });
+
+    // Sort so new matchups (Coming Next Season) appear at the bottom
+    return mappedPairs.sort((x, y) => {
+      if (x.isNewMatchup && !y.isNewMatchup) return 1;
+      if (!x.isNewMatchup && y.isNewMatchup) return -1;
+      return 0;
     });
   }, [ranked, champ]);
 
@@ -211,7 +228,12 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
                       <img src={b.img} alt={b.name} className="h-full w-full object-cover" decoding="async" fetchPriority={b.rank <= 3 ? "high" : "auto"} />
                     </div>
                     <div className="min-w-0">
-                      <div className="truncate font-display text-sm font-bold text-white">{b.name}</div>
+                      <div className="truncate font-display text-sm font-bold text-white flex items-center gap-2">
+                        {b.name}
+                        {b.debutDate && new Date().getTime() - new Date(b.debutDate).getTime() < 5 * 24 * 60 * 60 * 1000 && (
+                          <span className="inline-block rounded bg-yellow-500/20 px-1.5 py-[1px] text-[8px] font-bold uppercase tracking-wider text-yellow-400">NEW</span>
+                        )}
+                      </div>
                       <div className="truncate font-mono text-[10px] uppercase text-muted-foreground">${b.contract}</div>
                     </div>
                   </Link>
@@ -279,7 +301,12 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
                       loading="lazy"
                     />
                     <div className="py-3 md:py-4 pr-2">
-                      <div className="font-display text-lg font-bold text-white leading-tight">{v.a.name}</div>
+                      <div className="font-display text-lg font-bold text-white leading-tight flex items-center gap-2">
+                        {v.a.name}
+                        {v.a.debutDate && new Date().getTime() - new Date(v.a.debutDate).getTime() < 5 * 24 * 60 * 60 * 1000 && (
+                          <span className="inline-block rounded bg-yellow-500/20 px-1.5 py-[1px] text-[8px] font-bold uppercase tracking-wider text-yellow-400">NEW</span>
+                        )}
+                      </div>
                       <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider mb-1">${v.a.ticker}</div>
                       <div className="font-mono text-sm font-bold text-white">{champ.formatData(v.a[champ.metric])}</div>
                       {v.pctA >= v.pctB && (
@@ -297,33 +324,50 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
                     </div>
 
                     <div className="w-full relative flex items-center gap-4">
-                      <span className="font-mono text-[10px] font-bold" style={{ color: v.a.accent }}>{v.pctA}%</span>
-                      <div className="h-2 flex-1 rounded-full bg-white/5 flex shadow-inner">
-                        <div
-                          className="h-full transition-all duration-1000 rounded-l-full relative"
-                          style={{ width: `${v.pctA}%`, background: v.a.accent }}
-                        >
-                          {/* Inner Shading/Glow */}
-                          <div className="absolute inset-0 rounded-l-full mix-blend-screen opacity-80" style={{ boxShadow: `0 0 12px ${v.a.accent}` }} />
-                          <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-l-full" />
+                      {v.isNewMatchup ? (
+                        <div className="w-full h-8 flex-1 rounded-full bg-white/5 border border-white/10 flex items-center justify-center relative overflow-hidden">
+                          <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(255,255,255,0.03)_10px,rgba(255,255,255,0.03)_20px)]" />
+                          <span className="font-mono text-[10px] font-bold tracking-widest text-muted-foreground uppercase relative z-10 flex items-center gap-2">
+                            <span className="inline-block h-2 w-2 rounded-full bg-yellow-500/50" />
+                            Coming Next Season
+                          </span>
                         </div>
-                        <div
-                          className="h-full transition-all duration-1000 rounded-r-full relative"
-                          style={{ width: `${v.pctB}%`, background: v.b.accent }}
-                        >
-                          {/* Inner Shading/Glow */}
-                          <div className="absolute inset-0 rounded-r-full mix-blend-screen opacity-80" style={{ boxShadow: `0 0 12px ${v.b.accent}` }} />
-                          <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-r-full" />
-                        </div>
-                      </div>
-                      <span className="font-mono text-[10px] font-bold" style={{ color: v.b.accent }}>{v.pctB}%</span>
+                      ) : (
+                        <>
+                          <span className="font-mono text-[10px] font-bold" style={{ color: v.a.accent }}>{v.pctA}%</span>
+                          <div className="h-2 flex-1 rounded-full bg-white/5 flex shadow-inner">
+                            <div
+                              className="h-full transition-all duration-1000 rounded-l-full relative"
+                              style={{ width: `${v.pctA}%`, background: v.a.accent }}
+                            >
+                              {/* Inner Shading/Glow */}
+                              <div className="absolute inset-0 rounded-l-full mix-blend-screen opacity-80" style={{ boxShadow: `0 0 12px ${v.a.accent}` }} />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-l-full" />
+                            </div>
+                            <div
+                              className="h-full transition-all duration-1000 rounded-r-full relative"
+                              style={{ width: `${v.pctB}%`, background: v.b.accent }}
+                            >
+                              {/* Inner Shading/Glow */}
+                              <div className="absolute inset-0 rounded-r-full mix-blend-screen opacity-80" style={{ boxShadow: `0 0 12px ${v.b.accent}` }} />
+                              <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-r-full" />
+                            </div>
+                          </div>
+                          <span className="font-mono text-[10px] font-bold" style={{ color: v.b.accent }}>{v.pctB}%</span>
+                        </>
+                      )}
                     </div>
                   </div>
 
                   {/* Right Bull */}
                   <div className="flex items-center justify-end gap-4 flex-1 w-full md:w-1/3 text-right flex-row-reverse md:flex-row">
-                    <div className="py-3 md:py-4 pl-2">
-                      <div className="font-display text-lg font-bold text-white leading-tight">{v.b.name}</div>
+                    <div className="py-3 md:py-4 pl-2 text-right">
+                      <div className="font-display text-lg font-bold text-white leading-tight flex items-center justify-end gap-2">
+                        {v.b.debutDate && new Date().getTime() - new Date(v.b.debutDate).getTime() < 5 * 24 * 60 * 60 * 1000 && (
+                          <span className="inline-block rounded bg-yellow-500/20 px-1.5 py-[1px] text-[8px] font-bold uppercase tracking-wider text-yellow-400">NEW</span>
+                        )}
+                        {v.b.name}
+                      </div>
                       <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider mb-1">${v.b.ticker}</div>
                       <div className="font-mono text-sm font-bold text-white">{champ.formatData(v.b[champ.metric])}</div>
                       {v.pctB > v.pctA && (
@@ -381,6 +425,11 @@ function Index() {
   const { data: liveUpdates } = useLiveData(INITIAL_PLAYERS);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
+
+  // Check if any player is new
+  const newPlayer = useMemo(() => {
+    return INITIAL_PLAYERS.find(p => p.debutDate && new Date().getTime() - new Date(p.debutDate).getTime() < 5 * 24 * 60 * 60 * 1000);
+  }, []);
 
   // Countdown timer logic (48 hours, resets at 00:00 UTC)
   const [timeLeft, setTimeLeft] = useState({ d: "00", h: "00", m: "00", s: "00" });
@@ -515,6 +564,42 @@ function Index() {
             </div>
           </div>
         </section>
+
+        {/* NEW PLAYER BANNER */}
+        {newPlayer && (
+          <div className="mx-auto max-w-7xl px-6 pt-8">
+            <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-6 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative"
+              style={{ backgroundImage: `url(${bannerBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+            >
+              {/* Background ambient */}
+              <div className="absolute inset-0 bg-black/60 z-0"></div>
+              <div className="absolute -right-20 top-1/2 h-64 w-64 -translate-y-1/2 rounded-full blur-[80px] opacity-40 pointer-events-none z-0" style={{ background: newPlayer.accent }} />
+              
+              <div className="flex items-center gap-6 relative z-10">
+                <div className="h-16 w-16 md:h-20 md:w-20 shrink-0 rounded-xl border-2 flex items-center justify-center overflow-hidden bg-black/50" style={{ borderColor: newPlayer.accent }}>
+                  <img src={newPlayer.img} alt={newPlayer.name} className="h-full w-full object-cover" />
+                </div>
+                <div>
+                  <div className="inline-block rounded-full bg-yellow-500/20 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-yellow-400 mb-2">
+                    NEW CHALLENGER ENTERED THE ARENA
+                  </div>
+                  <h3 className="font-display text-2xl md:text-3xl font-extrabold text-white">
+                    {newPlayer.name} <span className="text-muted-foreground font-medium text-lg md:text-xl ml-1">starts the climb.</span>
+                  </h3>
+                  <div className="font-mono text-[10px] uppercase text-muted-foreground mt-1 tracking-wider">
+                    ${newPlayer.ticker} • {newPlayer.nation} {newPlayer.flag}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="relative z-10 w-full md:w-auto shrink-0">
+                <a href="#GOAT" onClick={(e) => { e.preventDefault(); setActiveTab(0); document.getElementById('GOAT')?.scrollIntoView({ behavior: 'smooth' }); }} className="block w-full md:w-auto text-center rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 px-6 py-3 font-mono text-xs font-bold uppercase tracking-widest text-white transition-colors">
+                  VIEW THE BOARD
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* CHAMPIONSHIP TABS & COUNTDOWN */}
         <div className="mx-auto max-w-7xl px-6 pt-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
