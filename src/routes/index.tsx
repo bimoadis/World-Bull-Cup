@@ -183,7 +183,7 @@ function MatchCard({ v, champ, delay, isFinal = false }: any) {
   );
 }
 
-function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, index, timeLeft }: any) {
+function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, index, timeLeft, refetch, isFetching }: any) {
   // Sort and rank players for this specific metric
   const ranked = useMemo(() => {
     const sorted = [...players].sort((a: any, b: any) => b[champ.metric] - a[champ.metric]);
@@ -262,13 +262,22 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
               <p className="mt-2 text-xs text-muted-foreground">{champ.desc}</p>
             </div>
             {index === 0 && (
-              <button
-                onClick={() => setAutoRefresh(!autoRefresh)}
-                className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-medium text-white transition-colors hover:bg-white/10 sm:flex"
-              >
-                <div className={`h-1.5 w-1.5 rounded-full ${autoRefresh ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-white/20'}`} />
-                Auto-refresh <RefreshCw className={`h-3 w-3 ${autoRefresh ? 'animate-spin-slow' : ''}`} />
-              </button>
+              <div className="hidden sm:flex items-center gap-3">
+                <button
+                  onClick={() => refetch()}
+                  disabled={isFetching}
+                  className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-medium text-white transition-colors hover:bg-white/10"
+                >
+                  Refresh Now <RefreshCw className={`h-3 w-3 ${isFetching ? 'animate-spin' : ''}`} />
+                </button>
+                <button
+                  onClick={() => setAutoRefresh(!autoRefresh)}
+                  className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-medium text-white transition-colors hover:bg-white/10"
+                >
+                  <div className={`h-1.5 w-1.5 rounded-full ${autoRefresh ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-white/20'}`} />
+                  Auto-refresh
+                </button>
+              </div>
             )}
           </div>
 
@@ -482,8 +491,8 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
 }
 
 function Index() {
-  const { data: liveUpdates } = useLiveData(INITIAL_PLAYERS);
   const [autoRefresh, setAutoRefresh] = useState(true);
+  const { data: liveUpdates, refetch, isFetching } = useLiveData(INITIAL_PLAYERS, autoRefresh);
   const [activeTab, setActiveTab] = useState(0);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
@@ -737,6 +746,8 @@ function Index() {
           setAutoRefresh={setAutoRefresh}
           index={0}
           timeLeft={timeLeft}
+          refetch={refetch}
+          isFetching={isFetching}
         />
 
         <div className="mx-auto max-w-7xl px-6 py-16">

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-export const useLiveData = (players) => {
+export const useLiveData = (players, autoRefresh = true) => {
   return useQuery({
     queryKey: ['liveData'],
     queryFn: async () => {
@@ -35,7 +35,7 @@ export const useLiveData = (players) => {
           }
 
           // 2. Fetch On-chain Data (Holders & Burn) using Helius DAS / RPC
-          if (p.contract && p.contract !== "Soon") {
+          if (p.contract && p.contract !== "Soon" && p.contract !== "TBA") {
             try {
               // Fetch token accounts for Burn address (to calculate tokens burned)
               const burnRes = await fetch(HELIUS_RPC, {
@@ -55,14 +55,9 @@ export const useLiveData = (players) => {
               const burnData = await burnRes.json();
               const burnedAmount = burnData?.result?.value?.[0]?.account?.data?.parsed?.info?.tokenAmount?.uiAmount || 0;
 
-              // To fetch accurate holders on Solana without indexer is hard, 
-              // but we can use Helius getTokenAccounts if available or DAS API.
-              // Here we mock the holder fetch or use a dummy endpoint until the specific Helius DAS query is provided.
-              
               updates[p.id] = {
                 ...updates[p.id],
                 tokensBurned: burnedAmount > 0 ? burnedAmount : p.tokensBurned, // fallback to config if 0
-                // holders: fetchedHolders
               };
             } catch (e) {
               console.warn(`Failed to fetch On-chain data for ${p.id}`);
@@ -72,7 +67,7 @@ export const useLiveData = (players) => {
       );
       return updates;
     },
-    refetchInterval: 30_000, // Refetch every 30 seconds
+    refetchInterval: autoRefresh ? 30_000 : false, // Refetch every 30 seconds if autoRefresh is true
     staleTime: 10_000,
   });
 };
