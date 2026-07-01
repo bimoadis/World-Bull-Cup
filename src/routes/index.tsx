@@ -442,33 +442,49 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
                     viewport={{ once: true, margin: "-20px" }}
                     transition={{ duration: 0.4, delay: i * 0.1 }}
                     whileHover={{ scale: 1.02 }}
-                    key={i} className="rounded-xl border border-white/5 bg-[#121316] p-4 md:p-5 flex flex-row items-center justify-between group hover:bg-white/[0.02] transition-colors" style={{ borderLeft: `4px solid ${champ.accentHex}` }}
+                    key={i} 
+                    className="rounded-2xl border border-white/10 bg-gradient-to-b from-[#1c1d22] to-[#0A0A0B] p-5 md:p-6 relative overflow-hidden group shadow-[0_4px_30px_rgba(0,0,0,0.5)] effect-border-shine"
                   >
-                    <div className="flex items-center gap-3 md:gap-4">
-                      {winnerPlayer && (
-                        <div className="relative shrink-0">
+                    {/* Left glow line */}
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 h-1/2 w-1.5 rounded-r-md transition-all duration-500 group-hover:h-3/4 group-hover:shadow-[0_0_15px_currentColor]" style={{ background: champ.accentHex, color: champ.accentHex }} />
+                    
+                    {/* Top Row */}
+                    <div className="flex justify-between items-center text-[9px] md:text-[10px] font-mono tracking-widest text-muted-foreground uppercase mb-6 md:mb-8 relative z-10 pl-3 md:pl-4">
+                      <div className="font-bold text-white/70">{h.round} <span className="mx-1">•</span> {h.date}</div>
+                      <div>WINNING {champ.unit}</div>
+                    </div>
+
+                    {/* Middle: Trophy and Value (Left) vs Winner (Right) */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between my-4 md:my-6 relative z-10 pl-3 md:pl-4 pr-3 md:pr-4 gap-6 sm:gap-0">
+                      {/* Left Side: Trophy + Value (Sejajar) */}
+                      <div className="flex items-center gap-4 md:gap-5">
+                        <div className="relative">
+                          <div className="absolute inset-0 blur-xl opacity-30 mix-blend-screen rounded-full" style={{ background: champ.accentHex }} />
+                          <Trophy className="h-12 w-12 md:h-16 md:w-16 relative z-10 drop-shadow-2xl" style={{ color: champ.accentHex, filter: `drop-shadow(0 0 15px ${champ.accentHex}80)` }} />
+                        </div>
+                        <div className="font-display text-4xl md:text-5xl font-black text-white tracking-tight drop-shadow-md">
+                          {h.val}
+                        </div>
+                      </div>
+
+                      {/* Right Side: Winner Info (Sejajar) */}
+                      <div className="flex items-center gap-3 md:gap-4 self-end sm:self-auto">
+                        <div className="flex flex-col items-end">
+                          <div className="font-mono text-[9px] md:text-[10px] uppercase tracking-widest mb-0.5 md:mb-1 font-bold" style={{ color: champ.accentHex }}>WINNER</div>
+                          <div className="font-display text-lg md:text-2xl font-bold text-white flex items-center justify-end gap-1.5 md:gap-2">
+                            {!winnerPlayer && <Trophy className="h-4 w-4" style={{ color: champ.accentHex }} />}
+                            {h.winner}
+                          </div>
+                        </div>
+                        {winnerPlayer && (
                           <img 
                             src={winnerPlayer.img} 
                             alt={winnerPlayer.name} 
-                            className="h-10 w-10 md:h-12 md:w-12 rounded-lg object-cover border border-white/10 shadow-sm"
+                            className="h-12 w-12 md:h-16 md:w-16 rounded-full object-cover border-2 border-white/20 shadow-lg shrink-0"
                             loading="lazy"
                           />
-                          <div className="absolute -bottom-1.5 -right-1.5 rounded-full bg-[#121316] p-1 shadow-sm">
-                            <Trophy className="h-3 w-3 md:h-3.5 md:w-3.5" style={{ color: champ.accentHex }} />
-                          </div>
-                        </div>
-                      )}
-                      <div>
-                        <div className="font-mono text-[9px] md:text-[10px] text-muted-foreground uppercase tracking-wider mb-1 md:mb-1.5">{h.round} • {h.date}</div>
-                        <div className="font-display text-base md:text-xl font-bold text-white flex items-center gap-2 leading-none">
-                          {!winnerPlayer && <Trophy className="h-4 w-4" style={{ color: champ.accentHex }} />}
-                          {h.winner}
-                        </div>
+                        )}
                       </div>
-                    </div>
-                    <div className="text-right shrink-0 ml-2">
-                      <div className="font-mono text-[8px] md:text-[9px] text-muted-foreground uppercase tracking-wider mb-0.5 md:mb-1">Winning {champ.unit}</div>
-                      <div className="font-mono text-sm md:text-lg font-bold" style={{ color: champ.accentHex }}>{h.val}</div>
                     </div>
                   </motion.div>
                 );
