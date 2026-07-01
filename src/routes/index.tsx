@@ -9,6 +9,7 @@ import { INITIAL_PLAYERS } from "@/data/players";
 import { useLiveData } from "@/hooks/useLiveData";
 import { shareToOdds, fmtUSD, fmtPrice } from "@/utils";
 import { useMemo, useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -40,12 +41,13 @@ const CHAMPIONSHIPS = [
     accentBg: "bg-gold",
     accentBorder: "border-gold",
     accentHex: "#EAB308", // gold
+    accentRgb: "234, 179, 8",
     formatData: fmtUSD,
     unit: "MARKET CAP",
     showChart: true,
     history: [
-      { round: "Round 1", winner: "Lionel Bull", val: "$42.5M", date: "Jun 26, 2026" },
-      { round: "Round 2", winner: "Cristiano Bull", val: "$48.2M", date: "Jun 28, 2026" }
+      { round: "Season 1", winner: "Lionel Bull", val: "$42.5M", date: "Jun 26, 2026" },
+      { round: "Season 2", winner: "Cristiano Bull", val: "$48.2M", date: "Jun 28, 2026" }
     ]
   },
   {
@@ -58,12 +60,13 @@ const CHAMPIONSHIPS = [
     accentBg: "bg-[#E8602C]",
     accentBorder: "border-[#E8602C]",
     accentHex: "#E8602C", // fire
+    accentRgb: "232, 96, 44",
     formatData: (n: number) => `${(n / 1_000_000).toFixed(1)}M`,
     unit: "TOKENS BURNED",
     showChart: false,
     history: [
-      { round: "Round 1", winner: "Kylian Bull", val: "12.5M", date: "Jun 26, 2026" },
-      { round: "Round 2", winner: "Lionel Bull", val: "14.1M", date: "Jun 28, 2026" }
+      { round: "Season 1", winner: "Kylian Bull", val: "12.5M", date: "Jun 26, 2026" },
+      { round: "Season 2", winner: "Lionel Bull", val: "14.1M", date: "Jun 28, 2026" }
     ]
   },
   {
@@ -76,12 +79,13 @@ const CHAMPIONSHIPS = [
     accentBg: "bg-[#4F8FE8]",
     accentBorder: "border-[#4F8FE8]",
     accentHex: "#4F8FE8", // blue
+    accentRgb: "79, 143, 232",
     formatData: (n: number) => n.toLocaleString(),
     unit: "HOLDERS",
     showChart: false,
     history: [
-      { round: "Round 1", winner: "Cristiano Bull", val: "8,420", date: "Jun 26, 2026" },
-      { round: "Round 2", winner: "Kylian Bull", val: "9,150", date: "Jun 28, 2026" }
+      { round: "Season 1", winner: "Cristiano Bull", val: "8,420", date: "Jun 26, 2026" },
+      { round: "Season 2", winner: "Kylian Bull", val: "9,150", date: "Jun 28, 2026" }
     ]
   }
 ];
@@ -204,8 +208,13 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
               </div>
 
               {/* TABLE ROWS */}
-              {ranked.map((b: any) => (
-                <div key={b.rank} className={`relative grid ${champ.showChart ? 'grid-cols-[50px_minmax(0,1.8fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_100px]' : 'grid-cols-[50px_minmax(0,1.8fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_100px]'} items-center gap-4 border-b border-white/5 px-6 py-4 transition-colors last:border-0 hover:bg-white/[0.02]`}
+              {ranked.map((b: any, index: number) => (
+                <motion.div 
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-10px" }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  key={b.rank} className={`relative grid ${champ.showChart ? 'grid-cols-[50px_minmax(0,1.8fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_100px]' : 'grid-cols-[50px_minmax(0,1.8fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_100px]'} items-center gap-4 border-b border-white/5 px-6 py-4 transition-colors last:border-0 hover:bg-white/[0.02]`}
                   style={b.rank === 1 ? { background: `linear-gradient(to right, ${champ.accentHex}20, transparent)` } : {}}
                 >
                   {/* Left Border for rank 1 */}
@@ -231,7 +240,7 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
                       <div className="truncate font-display text-sm font-bold text-white flex items-center gap-2">
                         {b.name}
                         {b.debutDate && new Date().getTime() - new Date(b.debutDate).getTime() < 5 * 24 * 60 * 60 * 1000 && (
-                          <span className="inline-block rounded bg-yellow-500/20 px-1.5 py-[1px] text-[8px] font-bold uppercase tracking-wider text-yellow-400">NEW</span>
+                          <span className="inline-block rounded bg-yellow-500/20 px-1.5 py-[1px] text-[8px] font-bold uppercase tracking-wider text-yellow-400 effect-reflection">NEW</span>
                         )}
                       </div>
                       <div className="truncate font-mono text-[10px] uppercase text-muted-foreground">${b.contract}</div>
@@ -269,7 +278,7 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
                       Trade
                     </a>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -282,35 +291,42 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
             <h2 className="font-display text-3xl font-extrabold text-white">THE VERSUS</h2>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3 md:space-y-4">
             {versus.map((v: any, i: number) => (
-              <div key={i} className="relative overflow-hidden rounded-xl border border-white/5 bg-[#121316]">
+              <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-20px" }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                whileHover={{ scale: 1.01 }}
+                key={i} className="relative overflow-hidden rounded-xl border border-white/5 bg-[#121316] effect-border-shine h-[130px]"
+              >
                 {/* Background ambient light */}
                 <div className="absolute inset-0 pointer-events-none mix-blend-screen">
-                  <div className="absolute -left-16 top-1/2 h-[250px] w-[250px] -translate-y-1/2 rounded-full blur-[60px] opacity-60" style={{ background: v.a.accent }} />
-                  <div className="absolute -right-16 top-1/2 h-[250px] w-[250px] -translate-y-1/2 rounded-full blur-[60px] opacity-60" style={{ background: v.b.accent }} />
+                  <div className="absolute -left-16 top-1/2 h-[250px] w-[250px] -translate-y-1/2 rounded-full blur-[60px] opacity-40" style={{ background: v.a.accent }} />
+                  <div className="absolute -right-16 top-1/2 h-[250px] w-[250px] -translate-y-1/2 rounded-full blur-[60px] opacity-40" style={{ background: v.b.accent }} />
                 </div>
 
-                <div className="relative z-10 flex flex-col md:flex-row items-stretch justify-between min-h-[70px]">
+                <div className="relative z-10 flex items-stretch justify-between h-full">
                   {/* Left Bull */}
-                  <div className="flex items-center gap-4 flex-1 w-full md:w-1/3">
+                  <div className="flex items-center flex-1 min-w-0">
                     <img
                       src={v.a.img}
                       alt={v.a.name}
-                      className="h-[100px] md:h-full w-28 md:w-40 object-cover [mask-image:linear-gradient(to_right,black_60%,transparent)]"
+                      className="absolute md:relative left-0 top-0 h-full w-24 md:w-32 object-cover [mask-image:linear-gradient(to_right,black_60%,transparent)] opacity-30 md:opacity-100 z-0 pointer-events-none"
                       loading="lazy"
                     />
-                    <div className="py-3 md:py-4 pr-2">
-                      <div className="font-display text-lg font-bold text-white leading-tight flex items-center gap-2">
-                        {v.a.name}
+                    <div className="py-2 md:py-4 pl-4 md:pl-0 pr-2 md:pr-2 relative z-10 flex flex-col justify-center min-w-0 h-full">
+                      <div className="font-display text-xs sm:text-sm md:text-lg font-bold text-white leading-tight flex items-center gap-1 md:gap-2 flex-wrap">
+                        <span className="truncate">{v.a.name}</span>
                         {v.a.debutDate && new Date().getTime() - new Date(v.a.debutDate).getTime() < 5 * 24 * 60 * 60 * 1000 && (
-                          <span className="inline-block rounded bg-yellow-500/20 px-1.5 py-[1px] text-[8px] font-bold uppercase tracking-wider text-yellow-400">NEW</span>
+                          <span className="inline-block rounded bg-yellow-500/20 px-1 md:px-1.5 py-[1px] text-[7px] md:text-[8px] font-bold uppercase tracking-wider text-yellow-400 effect-reflection shrink-0">NEW</span>
                         )}
                       </div>
-                      <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider mb-1">${v.a.ticker}</div>
-                      <div className="font-mono text-sm font-bold text-white">{champ.formatData(v.a[champ.metric])}</div>
+                      <div className="font-mono text-[8px] md:text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5 md:mb-1 truncate">${v.a.ticker}</div>
+                      <div className="font-mono text-[10px] md:text-sm font-bold text-white truncate">{champ.formatData(v.a[champ.metric])}</div>
                       {v.pctA >= v.pctB && (
-                        <div className="mt-1.5 inline-block rounded bg-gold/20 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-gold">
+                        <div className="mt-1 inline-block rounded bg-gold/10 px-1.5 md:px-2 py-0.5 text-[7px] md:text-[9px] font-bold uppercase tracking-wider text-gold self-start effect-shimmer-bg-slow effect-glow-slow">
                           FRONT RUNNER
                         </div>
                       )}
@@ -318,60 +334,57 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
                   </div>
 
                   {/* Center VS & Bar */}
-                  <div className="flex flex-col items-center justify-center flex-1 w-full md:w-1/3 px-4 py-3 md:py-4">
-                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full border border-gold/40 bg-[#0A0A0B] font-display text-xs font-black text-gold shadow-[0_0_15px_rgba(252,211,77,0.15)] z-10">
-                      VS
+                  <div className="flex flex-col items-center justify-center w-[25%] sm:w-1/3 px-1 sm:px-2 md:px-4 py-2 md:py-4 shrink-0 relative z-10">
+                    <div className="mb-2 md:mb-4 rounded-full border-[1.5px] border-[#DAA520] bg-[#0A0A0B] p-[2px] md:p-[3px] effect-glow">
+                      <div className="flex h-6 w-6 md:h-9 md:w-9 items-center justify-center rounded-full border-[1.5px] border-[#DAA520] bg-gradient-to-br from-[#3b2b00] to-[#0A0A0B] shadow-[inset_0_0_15px_rgba(218,165,32,0.5)]">
+                        <span className="font-display text-[8px] md:text-xs font-black text-[#FFD700]" style={{ textShadow: '0 0 10px rgba(255,215,0,0.8)' }}>
+                          VS
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="w-full relative flex items-center gap-4">
+                    <div className="w-full relative flex items-center gap-1 sm:gap-2 md:gap-4">
                       {v.isNewMatchup ? (
-                        <div className="w-full h-8 flex-1 rounded-full bg-white/5 border border-white/10 flex items-center justify-center relative overflow-hidden">
+                        <div className="w-full h-3 sm:h-4 md:h-8 flex-1 rounded-full bg-white/5 border border-white/10 flex items-center justify-center relative overflow-hidden">
                           <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(255,255,255,0.03)_10px,rgba(255,255,255,0.03)_20px)]" />
-                          <span className="font-mono text-[10px] font-bold tracking-widest text-muted-foreground uppercase relative z-10 flex items-center gap-2">
-                            <span className="inline-block h-2 w-2 rounded-full bg-yellow-500/50" />
-                            Coming Next Season
+                          <span className="font-mono text-[6px] sm:text-[7px] md:text-[10px] font-bold tracking-widest text-muted-foreground uppercase relative z-10 flex items-center gap-1 md:gap-2">
+                            <span className="hidden sm:inline-block h-1.5 w-1.5 md:h-2 md:w-2 rounded-full bg-yellow-500/50" />
+                            <span className="hidden md:inline">Coming Next Season</span>
+                            <span className="md:hidden">Next Season</span>
                           </span>
                         </div>
                       ) : (
                         <>
-                          <span className="font-mono text-[10px] font-bold" style={{ color: v.a.accent }}>{v.pctA}%</span>
-                          <div className="h-2 flex-1 rounded-full bg-white/5 flex shadow-inner">
-                            <div
-                              className="h-full transition-all duration-1000 rounded-l-full relative"
-                              style={{ width: `${v.pctA}%`, background: v.a.accent }}
-                            >
-                              {/* Inner Shading/Glow */}
+                          <span className="font-mono text-[7px] md:text-[10px] font-bold" style={{ color: v.a.accent }}>{v.pctA}%</span>
+                          <div className="h-1.5 md:h-2 flex-1 rounded-full bg-white/5 flex shadow-inner">
+                            <div className="h-full transition-all duration-1000 rounded-l-full relative" style={{ width: `${v.pctA}%`, background: v.a.accent }}>
                               <div className="absolute inset-0 rounded-l-full mix-blend-screen opacity-80" style={{ boxShadow: `0 0 12px ${v.a.accent}` }} />
                               <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-l-full" />
                             </div>
-                            <div
-                              className="h-full transition-all duration-1000 rounded-r-full relative"
-                              style={{ width: `${v.pctB}%`, background: v.b.accent }}
-                            >
-                              {/* Inner Shading/Glow */}
+                            <div className="h-full transition-all duration-1000 rounded-r-full relative" style={{ width: `${v.pctB}%`, background: v.b.accent }}>
                               <div className="absolute inset-0 rounded-r-full mix-blend-screen opacity-80" style={{ boxShadow: `0 0 12px ${v.b.accent}` }} />
                               <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-r-full" />
                             </div>
                           </div>
-                          <span className="font-mono text-[10px] font-bold" style={{ color: v.b.accent }}>{v.pctB}%</span>
+                          <span className="font-mono text-[7px] md:text-[10px] font-bold" style={{ color: v.b.accent }}>{v.pctB}%</span>
                         </>
                       )}
                     </div>
                   </div>
 
                   {/* Right Bull */}
-                  <div className="flex items-center justify-end gap-4 flex-1 w-full md:w-1/3 text-right flex-row-reverse md:flex-row">
-                    <div className="py-3 md:py-4 pl-2 text-right">
-                      <div className="font-display text-lg font-bold text-white leading-tight flex items-center justify-end gap-2">
+                  <div className="flex items-center justify-end flex-1 min-w-0 text-right">
+                    <div className="py-2 md:py-4 pr-4 md:pr-0 pl-2 md:pl-2 relative z-10 flex flex-col justify-center items-end min-w-0 h-full">
+                      <div className="font-display text-xs sm:text-sm md:text-lg font-bold text-white leading-tight flex items-center justify-end gap-1 md:gap-2 flex-wrap-reverse">
                         {v.b.debutDate && new Date().getTime() - new Date(v.b.debutDate).getTime() < 5 * 24 * 60 * 60 * 1000 && (
-                          <span className="inline-block rounded bg-yellow-500/20 px-1.5 py-[1px] text-[8px] font-bold uppercase tracking-wider text-yellow-400">NEW</span>
+                          <span className="inline-block rounded bg-yellow-500/20 px-1 md:px-1.5 py-[1px] text-[7px] md:text-[8px] font-bold uppercase tracking-wider text-yellow-400 effect-reflection shrink-0">NEW</span>
                         )}
-                        {v.b.name}
+                        <span className="truncate">{v.b.name}</span>
                       </div>
-                      <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider mb-1">${v.b.ticker}</div>
-                      <div className="font-mono text-sm font-bold text-white">{champ.formatData(v.b[champ.metric])}</div>
+                      <div className="font-mono text-[8px] md:text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5 md:mb-1 truncate">${v.b.ticker}</div>
+                      <div className="font-mono text-[10px] md:text-sm font-bold text-white truncate">{champ.formatData(v.b[champ.metric])}</div>
                       {v.pctB > v.pctA && (
-                        <div className="mt-1.5 inline-block rounded bg-gold/20 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-gold">
+                        <div className="mt-1 inline-block rounded bg-gold/10 px-1.5 md:px-2 py-0.5 text-[7px] md:text-[9px] font-bold uppercase tracking-wider text-gold self-end effect-shimmer-bg-slow effect-glow-slow">
                           FRONT RUNNER
                         </div>
                       )}
@@ -379,12 +392,12 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
                     <img
                       src={v.b.img}
                       alt={v.b.name}
-                      className="h-[100px] md:h-full w-28 md:w-40 object-cover [mask-image:linear-gradient(to_left,black_60%,transparent)]"
+                      className="absolute md:relative right-0 top-0 h-full w-24 md:w-32 object-cover [mask-image:linear-gradient(to_left,black_60%,transparent)] opacity-30 md:opacity-100 z-0 pointer-events-none"
                       loading="lazy"
                     />
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </section>
@@ -398,21 +411,46 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {champ.history.map((h: any, i: number) => (
-                <div key={i} className="rounded-xl border border-white/5 bg-[#121316] p-5 flex flex-row items-center justify-between group hover:bg-white/[0.02] transition-colors" style={{ borderLeft: `4px solid ${champ.accentHex}` }}>
-                  <div>
-                    <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider mb-2">{h.round} • {h.date}</div>
-                    <div className="font-display text-xl font-bold text-white flex items-center gap-2">
-                      <Trophy className="h-4 w-4" style={{ color: champ.accentHex }} />
-                      {h.winner}
+              {champ.history.map((h: any, i: number) => {
+                const winnerPlayer = INITIAL_PLAYERS.find(p => p.name === h.winner);
+                return (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true, margin: "-20px" }}
+                    transition={{ duration: 0.4, delay: i * 0.1 }}
+                    whileHover={{ scale: 1.02 }}
+                    key={i} className="rounded-xl border border-white/5 bg-[#121316] p-4 md:p-5 flex flex-row items-center justify-between group hover:bg-white/[0.02] transition-colors" style={{ borderLeft: `4px solid ${champ.accentHex}` }}
+                  >
+                    <div className="flex items-center gap-3 md:gap-4">
+                      {winnerPlayer && (
+                        <div className="relative shrink-0">
+                          <img 
+                            src={winnerPlayer.img} 
+                            alt={winnerPlayer.name} 
+                            className="h-10 w-10 md:h-12 md:w-12 rounded-lg object-cover border border-white/10 shadow-sm"
+                            loading="lazy"
+                          />
+                          <div className="absolute -bottom-1.5 -right-1.5 rounded-full bg-[#121316] p-1 shadow-sm">
+                            <Trophy className="h-3 w-3 md:h-3.5 md:w-3.5" style={{ color: champ.accentHex }} />
+                          </div>
+                        </div>
+                      )}
+                      <div>
+                        <div className="font-mono text-[9px] md:text-[10px] text-muted-foreground uppercase tracking-wider mb-1 md:mb-1.5">{h.round} • {h.date}</div>
+                        <div className="font-display text-base md:text-xl font-bold text-white flex items-center gap-2 leading-none">
+                          {!winnerPlayer && <Trophy className="h-4 w-4" style={{ color: champ.accentHex }} />}
+                          {h.winner}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-mono text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Winning {champ.unit}</div>
-                    <div className="font-mono text-lg font-bold" style={{ color: champ.accentHex }}>{h.val}</div>
-                  </div>
-                </div>
-              ))}
+                    <div className="text-right shrink-0 ml-2">
+                      <div className="font-mono text-[8px] md:text-[9px] text-muted-foreground uppercase tracking-wider mb-0.5 md:mb-1">Winning {champ.unit}</div>
+                      <div className="font-mono text-sm md:text-lg font-bold" style={{ color: champ.accentHex }}>{h.val}</div>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
           </section>
         )}
@@ -512,7 +550,12 @@ function Index() {
 
       <main>
         {/* HERO SECTION */}
-        <section className="relative overflow-hidden border-b border-white/5 bg-[#0D0E10]">
+        <motion.section 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="relative overflow-hidden border-b border-white/5 bg-[#0D0E10]"
+        >
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-0 right-0 w-2/3 h-full mix-blend-screen opacity-90">
               <img src={arenaHero} alt="Arena" className="w-full h-full object-cover [mask-image:linear-gradient(to_left,black,transparent)]" fetchPriority="high" decoding="async" />
@@ -563,24 +606,29 @@ function Index() {
               </p>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* NEW PLAYER BANNER */}
         {newPlayer && (
-          <div className="mx-auto max-w-7xl px-6 pt-8">
-            <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-6 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative"
-              style={{ backgroundImage: `url(${bannerBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mx-auto max-w-7xl px-6 pt-8"
+          >
+            <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-6 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative effect-border-shine"
+              style={{ backgroundImage: `url(${bannerBg})`, backgroundSize: 'cover', backgroundPosition: 'center 40%' }}
             >
               {/* Background ambient */}
               <div className="absolute inset-0 bg-black/60 z-0"></div>
-              <div className="absolute -right-20 top-1/2 h-64 w-64 -translate-y-1/2 rounded-full blur-[80px] opacity-40 pointer-events-none z-0" style={{ background: newPlayer.accent }} />
-              
+              <div className="absolute -right-20 top-1/2 h-64 w-64 -translate-y-1/2 rounded-full blur-[80px] opacity-40 pointer-events-none z-0 animate-pulse effect-glow" style={{ background: newPlayer.accent }} />
+
               <div className="flex items-center gap-6 relative z-10">
-                <div className="h-16 w-16 md:h-20 md:w-20 shrink-0 rounded-xl border-2 flex items-center justify-center overflow-hidden bg-black/50" style={{ borderColor: newPlayer.accent }}>
+                <div className="h-16 w-16 md:h-20 md:w-20 shrink-0 rounded-xl border-2 flex items-center justify-center overflow-hidden bg-black/50 effect-glow" style={{ borderColor: newPlayer.accent }}>
                   <img src={newPlayer.img} alt={newPlayer.name} className="h-full w-full object-cover" />
                 </div>
                 <div>
-                  <div className="inline-block rounded-full bg-yellow-500/20 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-yellow-400 mb-2">
+                  <div className="inline-block rounded-full bg-yellow-500/20 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-yellow-400 mb-2 effect-shimmer-bg effect-glow">
                     NEW CHALLENGER ENTERED THE ARENA
                   </div>
                   <h3 className="font-display text-2xl md:text-3xl font-extrabold text-white">
@@ -591,14 +639,14 @@ function Index() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="relative z-10 w-full md:w-auto shrink-0">
-                <a href="#GOAT" onClick={(e) => { e.preventDefault(); setActiveTab(0); document.getElementById('GOAT')?.scrollIntoView({ behavior: 'smooth' }); }} className="block w-full md:w-auto text-center rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 px-6 py-3 font-mono text-xs font-bold uppercase tracking-widest text-white transition-colors">
+                <a href="#GOAT" onClick={(e) => { e.preventDefault(); setActiveTab(0); document.getElementById('GOAT')?.scrollIntoView({ behavior: 'smooth' }); }} className="block w-full md:w-auto text-center rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 px-6 py-3 font-mono text-xs font-bold uppercase tracking-widest text-white transition-colors effect-reflection btn-gold-hover">
                   VIEW THE BOARD
                 </a>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* CHAMPIONSHIP TABS & COUNTDOWN */}
@@ -609,19 +657,19 @@ function Index() {
                 key={champ.id}
                 onClick={() => setActiveTab(i)}
                 className={`px-6 py-2.5 rounded-full font-mono text-[10px] font-bold uppercase tracking-[0.15em] transition-all border ${activeTab === i
-                  ? `${champ.accentBg} ${champ.accentBorder} text-black shadow-[0_0_15px_rgba(0,0,0,0.5)]`
-                  : `bg-[#121316] border-white/5 text-muted-foreground hover:border-white/20 hover:text-white`
+                  ? `${champ.accentBg} ${champ.accentBorder} text-black shadow-[0_0_15px_rgba(0,0,0,0.5)] effect-shimmer-bg effect-glow`
+                  : `bg-[#121316] border-white/5 text-muted-foreground hover:border-white/20 hover:text-white effect-reflection`
                   }`}
-                style={activeTab === i ? { boxShadow: `0 0 15px ${champ.accentHex}40` } : {}}
+                style={activeTab === i ? { boxShadow: `0 0 15px ${champ.accentHex}40`, '--glow-color': champ.accentRgb } as any : {}}
               >
                 {champ.title}
               </button>
             ))}
           </div>
 
-          <div className="bg-[#121316] border border-white/5 rounded-xl px-6 py-4 inline-block self-start md:self-end">
+          <div className="bg-[#121316] border border-white/5 rounded-xl px-6 py-4 inline-block self-start md:self-end effect-border-shine" style={{ '--glow-color': CHAMPIONSHIPS[activeTab].accentRgb } as any}>
             <div className="font-mono text-[12px] font-bold tracking-[0.2em] text-muted-foreground uppercase mb-2">NEXT ROUND IN</div>
-            <div className={`font-mono text-[32px] leading-none font-bold flex gap-2 justify-center md:justify-end ${CHAMPIONSHIPS[activeTab].accentText}`}>
+            <div className={`font-mono text-[32px] leading-none font-bold flex gap-2 justify-center md:justify-end ${CHAMPIONSHIPS[activeTab].accentText}`} style={{ '--glow-color': CHAMPIONSHIPS[activeTab].accentRgb } as any}>
               <span>{timeLeft.d}<span className="text-sm text-muted-foreground ml-1">D</span></span> :
               <span>{timeLeft.h}<span className="text-sm text-muted-foreground ml-1">H</span></span> :
               <span>{timeLeft.m}<span className="text-sm text-muted-foreground ml-1">M</span></span> :
