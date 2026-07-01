@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Trophy, TrendingUp, TrendingDown, Menu, Zap, User, RefreshCw, CheckSquare, Square, Users } from "lucide-react";
+import { Trophy, TrendingUp, TrendingDown, Menu, Zap, User, RefreshCw, CheckSquare, Square, Users, Wallet } from "lucide-react";
 // @ts-ignore
 import arenaHero from "@/assets/arena-bg.png";
 import logo from "@/assets/logo.png";
@@ -102,7 +102,88 @@ function Sparkline({ up }: { up: boolean }) {
   );
 }
 
-function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, index }: any) {
+function MatchCard({ v, champ, delay, isFinal = false }: any) {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-20px" }}
+      transition={{ duration: 0.5, delay }}
+      whileHover={{ scale: 1.01 }}
+      className={`relative overflow-hidden rounded-xl border ${isFinal ? 'border-[#DAA520] shadow-[0_0_15px_rgba(218,165,32,0.2)] h-[185px] md:h-[220px]' : 'border-white/5 h-[110px] md:h-[130px]'} bg-[#121316] effect-border-shine w-full`}
+    >
+      {/* Background ambient light */}
+      <div className="absolute inset-0 pointer-events-none mix-blend-screen">
+        <div className="absolute -left-16 top-1/2 h-[250px] w-[250px] -translate-y-1/2 rounded-full blur-[60px] opacity-40" style={{ background: v.a.accent }} />
+        <div className="absolute -right-16 top-1/2 h-[250px] w-[250px] -translate-y-1/2 rounded-full blur-[60px] opacity-40" style={{ background: v.b.accent }} />
+      </div>
+
+      <div className="relative z-10 flex items-stretch justify-between h-full">
+        {/* Left Bull */}
+        <div className="flex items-center flex-1 min-w-0">
+          <img
+            src={v.a.img}
+            alt={v.a.name}
+            className={`absolute left-0 top-0 h-full ${isFinal ? 'w-48 md:w-64' : 'w-24 md:w-32'} object-cover [mask-image:linear-gradient(to_right,black_20%,transparent_80%)] opacity-40 md:opacity-100 z-0 pointer-events-none`}
+            loading="lazy"
+          />
+          <div className={`py-2 md:py-4 pr-2 md:pr-2 relative z-10 flex flex-col justify-center min-w-0 h-full ${isFinal ? 'pl-24 sm:pl-32 md:pl-48' : 'pl-16 sm:pl-24 md:pl-28'}`}>
+            <div className={`font-display font-bold text-white leading-tight flex items-center gap-1 md:gap-2 flex-wrap ${isFinal ? 'text-base sm:text-xl md:text-3xl' : 'text-xs sm:text-sm md:text-base'}`}>
+              <span>{v.a.name}</span>
+            </div>
+            <div className={`font-mono text-muted-foreground uppercase tracking-wider mb-0.5 md:mb-1 truncate ${isFinal ? 'text-[10px] md:text-[14px]' : 'text-[8px] md:text-[10px]'}`}>${v.a.ticker}</div>
+            <div className={`font-mono font-bold text-white truncate ${isFinal ? 'text-sm md:text-2xl' : 'text-[10px] md:text-sm'}`}>{champ.formatData(v.a[champ.metric])}</div>
+          </div>
+        </div>
+
+        {/* Center VS & Bar */}
+        <div className="flex flex-col items-center justify-center w-[25%] sm:w-1/3 px-1 sm:px-2 md:px-4 py-2 md:py-4 shrink-0 relative z-10">
+          <div className={`mb-2 md:mb-4 rounded-full border-[1.5px] ${isFinal ? 'border-gold p-[4px] md:p-[6px]' : 'border-[#DAA520] p-[2px] md:p-[3px]'} bg-[#0A0A0B] effect-glow`}>
+            <div className={`flex ${isFinal ? 'h-10 w-10 md:h-16 md:w-16 border-[3px]' : 'h-6 w-6 md:h-9 md:w-9 border-[1.5px]'} items-center justify-center rounded-full border-[#DAA520] bg-gradient-to-br from-[#3b2b00] to-[#0A0A0B] shadow-[inset_0_0_15px_rgba(218,165,32,0.5)]`}>
+              <span className={`font-display font-black text-[#FFD700] ${isFinal ? 'text-xs md:text-lg' : 'text-[8px] md:text-xs'}`} style={{ textShadow: '0 0 10px rgba(255,215,0,0.8)' }}>
+                VS
+              </span>
+            </div>
+          </div>
+
+          <div className="w-full relative flex items-center gap-1 sm:gap-2 md:gap-4">
+            <span className={`font-mono font-bold ${isFinal ? 'text-[10px] md:text-[16px]' : 'text-[7px] md:text-[10px]'}`} style={{ color: v.a.accent }}>{v.pctA}%</span>
+            <div className="h-1.5 md:h-2 flex-1 rounded-full bg-white/5 flex shadow-inner">
+              <div className="h-full transition-all duration-1000 rounded-l-full relative" style={{ width: `${v.pctA}%`, background: v.a.accent }}>
+                <div className="absolute inset-0 rounded-l-full mix-blend-screen opacity-80" style={{ boxShadow: `0 0 12px ${v.a.accent}` }} />
+                <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-l-full" />
+              </div>
+              <div className="h-full transition-all duration-1000 rounded-r-full relative" style={{ width: `${v.pctB}%`, background: v.b.accent }}>
+                <div className="absolute inset-0 rounded-r-full mix-blend-screen opacity-80" style={{ boxShadow: `0 0 12px ${v.b.accent}` }} />
+                <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-r-full" />
+              </div>
+            </div>
+            <span className={`font-mono font-bold ${isFinal ? 'text-[10px] md:text-[16px]' : 'text-[7px] md:text-[10px]'}`} style={{ color: v.b.accent }}>{v.pctB}%</span>
+          </div>
+        </div>
+
+        {/* Right Bull */}
+        <div className="flex items-center justify-end flex-1 min-w-0 text-right">
+          <div className={`py-2 md:py-4 pl-2 md:pl-2 relative z-10 flex flex-col justify-center items-end min-w-0 h-full ${isFinal ? 'pr-24 sm:pr-32 md:pr-48' : 'pr-16 sm:pr-24 md:pr-28'}`}>
+            <div className={`font-display font-bold text-white leading-tight flex items-center justify-end gap-1 md:gap-2 flex-wrap-reverse ${isFinal ? 'text-base sm:text-xl md:text-3xl' : 'text-xs sm:text-sm md:text-base'}`}>
+              <span>{v.b.name}</span>
+            </div>
+            <div className={`font-mono text-muted-foreground uppercase tracking-wider mb-0.5 md:mb-1 truncate ${isFinal ? 'text-[10px] md:text-[14px]' : 'text-[8px] md:text-[10px]'}`}>${v.b.ticker}</div>
+            <div className={`font-mono font-bold text-white truncate ${isFinal ? 'text-sm md:text-2xl' : 'text-[10px] md:text-sm'}`}>{champ.formatData(v.b[champ.metric])}</div>
+          </div>
+          <img
+            src={v.b.img}
+            alt={v.b.name}
+            className={`absolute right-0 top-0 h-full ${isFinal ? 'w-48 md:w-64' : 'w-24 md:w-32'} object-cover [mask-image:linear-gradient(to_left,black_20%,transparent_80%)] opacity-40 md:opacity-100 z-0 pointer-events-none`}
+            loading="lazy"
+          />
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, index, timeLeft }: any) {
   // Sort and rank players for this specific metric
   const ranked = useMemo(() => {
     const sorted = [...players].sort((a: any, b: any) => b[champ.metric] - a[champ.metric]);
@@ -121,54 +202,52 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
     });
   }, [players, champ]);
 
-  const versus = useMemo(() => {
-    const pairs = [];
-    for (let i = 0; i < ranked.length; i++) {
-      for (let j = i + 1; j < ranked.length; j++) {
-        pairs.push({ a: ranked[i], b: ranked[j] });
-      }
-    }
-    const mappedPairs = pairs.map((match, index) => {
-      let a = match.a;
-      let b = match.b;
+  const bracket = useMemo(() => {
+    const p1 = players.find((p: any) => p.id === "lionel") || players[0];
+    const p2 = players.find((p: any) => p.id === "kylian") || players[1];
+    const p3 = players.find((p: any) => p.id === "cristiano") || players[2];
+    const p4 = players.find((p: any) => p.id === "lamine") || players[3];
 
-      // Force Cristiano to be on the left for the second match
-      if (index === 1 && b?.name?.includes("Cristiano")) {
-        a = match.b;
-        b = match.a;
-      }
+    // SF1: Lionel vs Lamine
+    const m1a = p1[champ.metric] || 0;
+    const m1b = p4[champ.metric] || 0;
+    const m1Total = m1a + m1b;
+    const sf1 = {
+      a: p1, b: p4,
+      pctA: m1Total > 0 ? Math.round((m1a / m1Total) * 100) : 50,
+      pctB: m1Total > 0 ? Math.round((m1b / m1Total) * 100) : 50,
+      winner: m1a >= m1b ? p1 : p4,
+    };
 
-      const total = (a?.[champ.metric] || 0) + (b?.[champ.metric] || 0);
-      let pctA = total > 0 ? Math.round((a[champ.metric] / total) * 100) : 50;
-      let pctB = total > 0 ? Math.round((b[champ.metric] / total) * 100) : 50;
+    // SF2: Kylian vs Cristiano
+    const m2a = p2[champ.metric] || 0;
+    const m2b = p3[champ.metric] || 0;
+    const m2Total = m2a + m2b;
+    const sf2 = {
+      a: p2, b: p3,
+      pctA: m2Total > 0 ? Math.round((m2a / m2Total) * 100) : 50,
+      pctB: m2Total > 0 ? Math.round((m2b / m2Total) * 100) : 50,
+      winner: m2a >= m2b ? p2 : p3,
+    };
 
-      // Make Cristiano the frontrunner in the second match
-      if (index === 1 && a?.name?.includes("Cristiano")) {
-        pctA = 58;
-        pctB = 42;
-      }
-
-      // Check if matchup involves a new player (within 5 days)
-      const isNewA = a?.debutDate && new Date().getTime() - new Date(a.debutDate).getTime() < 5 * 24 * 60 * 60 * 1000;
-      const isNewB = b?.debutDate && new Date().getTime() - new Date(b.debutDate).getTime() < 5 * 24 * 60 * 60 * 1000;
-      const isNewMatchup = isNewA || isNewB;
-
-      return {
-        a,
-        b,
-        pctA,
-        pctB,
-        isNewMatchup
-      };
-    });
-
-    // Sort so new matchups (Coming Next Season) appear at the bottom
-    return mappedPairs.sort((x, y) => {
-      if (x.isNewMatchup && !y.isNewMatchup) return 1;
-      if (!x.isNewMatchup && y.isNewMatchup) return -1;
-      return 0;
-    });
-  }, [ranked, champ]);
+    // Final
+    const w1 = sf1.winner;
+    const w2 = sf2.winner;
+    const fa = w1[champ.metric] || 0;
+    const fb = w2[champ.metric] || 0;
+    const fTotal = fa + fb;
+    
+    return {
+      sf1,
+      sf2,
+      final: {
+        a: w1, b: w2,
+        pctA: fTotal > 0 ? Math.round((fa / fTotal) * 100) : 50,
+        pctB: fTotal > 0 ? Math.round((fb / fTotal) * 100) : 50,
+      },
+      champion: fa >= fb ? w1 : w2
+    };
+  }, [players, champ]);
 
   return (
     <div className={`py-16 ${index % 2 === 1 ? 'bg-[#0D0E10]' : 'bg-[#0A0A0B]'}`}>
@@ -284,121 +363,64 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
           </div>
         </section>
 
-        {/* THE VERSUS */}
+        {/* TOURNAMENT BRACKET */}
         <section className="mb-8">
-          <div className="mb-8">
-            <div className={`font-mono text-[10px] font-bold tracking-[0.2em] ${champ.accentText} uppercase mb-1`}>HEAD TO HEAD</div>
-            <h2 className="font-display text-3xl font-extrabold text-white">THE VERSUS</h2>
+          <div className="mb-8 text-center">
+            <div className={`font-mono text-[10px] md:text-xs font-bold tracking-[0.2em] ${champ.accentText} uppercase mb-2`}>THE KNOCKOUT STAGE</div>
+            <h2 className="font-display text-3xl md:text-4xl font-extrabold text-white">TOURNAMENT BRACKET</h2>
           </div>
 
-          <div className="space-y-3 md:space-y-4">
-            {versus.map((v: any, i: number) => (
-              <motion.div 
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-20px" }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                whileHover={{ scale: 1.01 }}
-                key={i} className="relative overflow-hidden rounded-xl border border-white/5 bg-[#121316] effect-border-shine h-[130px]"
-              >
-                {/* Background ambient light */}
-                <div className="absolute inset-0 pointer-events-none mix-blend-screen">
-                  <div className="absolute -left-16 top-1/2 h-[250px] w-[250px] -translate-y-1/2 rounded-full blur-[60px] opacity-40" style={{ background: v.a.accent }} />
-                  <div className="absolute -right-16 top-1/2 h-[250px] w-[250px] -translate-y-1/2 rounded-full blur-[60px] opacity-40" style={{ background: v.b.accent }} />
+          <div className="flex flex-col items-center relative w-full mt-4">
+            
+            {/* ROUND 1 */}
+            <div className="w-full flex flex-col lg:flex-row gap-6 lg:gap-12 justify-center items-center relative z-10">
+              {/* SF 1 */}
+              <div className="w-full max-w-xl">
+                <div className="text-center font-mono text-[10px] md:text-xs font-bold tracking-[0.2em] text-muted-foreground uppercase mb-3">DAY 1 • SEMI-FINAL 1</div>
+                <MatchCard v={bracket.sf1} champ={champ} delay={0.1} />
+                <div className="flex flex-col items-center mt-3 text-white/20">
+                  <div className="w-px h-6 border-l border-dashed border-white/20" />
+                  <div className="text-xs mt-1">↓ Winner Advances</div>
                 </div>
+              </div>
 
-                <div className="relative z-10 flex items-stretch justify-between h-full">
-                  {/* Left Bull */}
-                  <div className="flex items-center flex-1 min-w-0">
-                    <img
-                      src={v.a.img}
-                      alt={v.a.name}
-                      className="absolute md:relative left-0 top-0 h-full w-24 md:w-32 object-cover [mask-image:linear-gradient(to_right,black_60%,transparent)] opacity-30 md:opacity-100 z-0 pointer-events-none"
-                      loading="lazy"
-                    />
-                    <div className="py-2 md:py-4 pl-4 md:pl-0 pr-2 md:pr-2 relative z-10 flex flex-col justify-center min-w-0 h-full">
-                      <div className="font-display text-xs sm:text-sm md:text-lg font-bold text-white leading-tight flex items-center gap-1 md:gap-2 flex-wrap">
-                        <span className="truncate">{v.a.name}</span>
-                        {v.a.debutDate && new Date().getTime() - new Date(v.a.debutDate).getTime() < 5 * 24 * 60 * 60 * 1000 && (
-                          <span className="inline-block rounded bg-yellow-500/20 px-1 md:px-1.5 py-[1px] text-[7px] md:text-[8px] font-bold uppercase tracking-wider text-yellow-400 effect-reflection shrink-0">NEW</span>
-                        )}
-                      </div>
-                      <div className="font-mono text-[8px] md:text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5 md:mb-1 truncate">${v.a.ticker}</div>
-                      <div className="font-mono text-[10px] md:text-sm font-bold text-white truncate">{champ.formatData(v.a[champ.metric])}</div>
-                      {v.pctA >= v.pctB && (
-                        <div className="mt-1 inline-block rounded bg-gold/10 px-1.5 md:px-2 py-0.5 text-[7px] md:text-[9px] font-bold uppercase tracking-wider text-gold self-start effect-shimmer-bg-slow effect-glow-slow">
-                          FRONT RUNNER
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Center VS & Bar */}
-                  <div className="flex flex-col items-center justify-center w-[25%] sm:w-1/3 px-1 sm:px-2 md:px-4 py-2 md:py-4 shrink-0 relative z-10">
-                    <div className="mb-2 md:mb-4 rounded-full border-[1.5px] border-[#DAA520] bg-[#0A0A0B] p-[2px] md:p-[3px] effect-glow">
-                      <div className="flex h-6 w-6 md:h-9 md:w-9 items-center justify-center rounded-full border-[1.5px] border-[#DAA520] bg-gradient-to-br from-[#3b2b00] to-[#0A0A0B] shadow-[inset_0_0_15px_rgba(218,165,32,0.5)]">
-                        <span className="font-display text-[8px] md:text-xs font-black text-[#FFD700]" style={{ textShadow: '0 0 10px rgba(255,215,0,0.8)' }}>
-                          VS
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="w-full relative flex items-center gap-1 sm:gap-2 md:gap-4">
-                      {v.isNewMatchup ? (
-                        <div className="w-full h-3 sm:h-4 md:h-8 flex-1 rounded-full bg-white/5 border border-white/10 flex items-center justify-center relative overflow-hidden">
-                          <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(255,255,255,0.03)_10px,rgba(255,255,255,0.03)_20px)]" />
-                          <span className="font-mono text-[6px] sm:text-[7px] md:text-[10px] font-bold tracking-widest text-muted-foreground uppercase relative z-10 flex items-center gap-1 md:gap-2">
-                            <span className="hidden sm:inline-block h-1.5 w-1.5 md:h-2 md:w-2 rounded-full bg-yellow-500/50" />
-                            <span className="hidden md:inline">Coming Next Season</span>
-                            <span className="md:hidden">Next Season</span>
-                          </span>
-                        </div>
-                      ) : (
-                        <>
-                          <span className="font-mono text-[7px] md:text-[10px] font-bold" style={{ color: v.a.accent }}>{v.pctA}%</span>
-                          <div className="h-1.5 md:h-2 flex-1 rounded-full bg-white/5 flex shadow-inner">
-                            <div className="h-full transition-all duration-1000 rounded-l-full relative" style={{ width: `${v.pctA}%`, background: v.a.accent }}>
-                              <div className="absolute inset-0 rounded-l-full mix-blend-screen opacity-80" style={{ boxShadow: `0 0 12px ${v.a.accent}` }} />
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-l-full" />
-                            </div>
-                            <div className="h-full transition-all duration-1000 rounded-r-full relative" style={{ width: `${v.pctB}%`, background: v.b.accent }}>
-                              <div className="absolute inset-0 rounded-r-full mix-blend-screen opacity-80" style={{ boxShadow: `0 0 12px ${v.b.accent}` }} />
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-r-full" />
-                            </div>
-                          </div>
-                          <span className="font-mono text-[7px] md:text-[10px] font-bold" style={{ color: v.b.accent }}>{v.pctB}%</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Right Bull */}
-                  <div className="flex items-center justify-end flex-1 min-w-0 text-right">
-                    <div className="py-2 md:py-4 pr-4 md:pr-0 pl-2 md:pl-2 relative z-10 flex flex-col justify-center items-end min-w-0 h-full">
-                      <div className="font-display text-xs sm:text-sm md:text-lg font-bold text-white leading-tight flex items-center justify-end gap-1 md:gap-2 flex-wrap-reverse">
-                        {v.b.debutDate && new Date().getTime() - new Date(v.b.debutDate).getTime() < 5 * 24 * 60 * 60 * 1000 && (
-                          <span className="inline-block rounded bg-yellow-500/20 px-1 md:px-1.5 py-[1px] text-[7px] md:text-[8px] font-bold uppercase tracking-wider text-yellow-400 effect-reflection shrink-0">NEW</span>
-                        )}
-                        <span className="truncate">{v.b.name}</span>
-                      </div>
-                      <div className="font-mono text-[8px] md:text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5 md:mb-1 truncate">${v.b.ticker}</div>
-                      <div className="font-mono text-[10px] md:text-sm font-bold text-white truncate">{champ.formatData(v.b[champ.metric])}</div>
-                      {v.pctB > v.pctA && (
-                        <div className="mt-1 inline-block rounded bg-gold/10 px-1.5 md:px-2 py-0.5 text-[7px] md:text-[9px] font-bold uppercase tracking-wider text-gold self-end effect-shimmer-bg-slow effect-glow-slow">
-                          FRONT RUNNER
-                        </div>
-                      )}
-                    </div>
-                    <img
-                      src={v.b.img}
-                      alt={v.b.name}
-                      className="absolute md:relative right-0 top-0 h-full w-24 md:w-32 object-cover [mask-image:linear-gradient(to_left,black_60%,transparent)] opacity-30 md:opacity-100 z-0 pointer-events-none"
-                      loading="lazy"
-                    />
-                  </div>
+              {/* SF 2 */}
+              <div className="w-full max-w-xl">
+                <div className="text-center font-mono text-[10px] md:text-xs font-bold tracking-[0.2em] text-muted-foreground uppercase mb-3">DAY 1 • SEMI-FINAL 2</div>
+                <MatchCard v={bracket.sf2} champ={champ} delay={0.2} />
+                <div className="flex flex-col items-center mt-3 text-white/20">
+                  <div className="w-px h-6 border-l border-dashed border-white/20" />
+                  <div className="text-xs mt-1">↓ Winner Advances</div>
                 </div>
-              </motion.div>
-            ))}
+              </div>
+            </div>
+
+            {/* Connecting Lines Desktop */}
+            <div className="hidden lg:flex w-full max-w-3xl justify-between px-32 mt-4 opacity-30 relative z-0">
+               <div className="w-1/2 h-12 border-t-2 border-l-2 border-white/50 rounded-tl-xl" />
+               <div className="w-1/2 h-12 border-t-2 border-r-2 border-white/50 rounded-tr-xl" />
+            </div>
+            
+            <div className="hidden lg:flex justify-center w-full relative z-0 -mt-12">
+                <div className="w-px h-16 bg-white/30" />
+            </div>
+
+            {/* FINAL */}
+            <div className="w-full relative z-10 mt-6 lg:mt-0">
+              <div className="text-center font-mono text-[11px] md:text-sm font-bold tracking-[0.2em] text-gold uppercase mb-3 flex flex-col items-center gap-1">
+                <span>DAY 2 • THE FINAL</span>
+                {timeLeft && (
+                  <span className="text-[9px] md:text-[10px] text-muted-foreground flex gap-1.5 items-center bg-black/40 px-2.5 py-0.5 rounded-full border border-white/5 mt-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-gold animate-pulse shadow-[0_0_8px_rgba(218,165,32,0.6)]" />
+                    MATCH IN {timeLeft.d}D : {timeLeft.h}H : {timeLeft.m}M : {timeLeft.s}S
+                  </span>
+                )}
+              </div>
+              <MatchCard v={bracket.final} champ={champ} delay={0.4} isFinal={true} />
+            </div>
+
+
+            
           </div>
         </section>
 
@@ -463,6 +485,22 @@ function Index() {
   const { data: liveUpdates } = useLiveData(INITIAL_PLAYERS);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+
+  const connectPhantom = async () => {
+    try {
+      const provider = (window as any).solana;
+      if (provider?.isPhantom) {
+        const resp = await provider.connect();
+        setWalletAddress(resp.publicKey.toString());
+      } else {
+        alert("Phantom wallet not found! Please install the extension.");
+        window.open("https://phantom.app/", "_blank");
+      }
+    } catch (err) {
+      console.error("Wallet connection failed", err);
+    }
+  };
 
   // Check if any player is new
   const newPlayer = useMemo(() => {
@@ -534,14 +572,28 @@ function Index() {
             {/* Hiding Matches link */}
             {/* <a href="#matches" className="hover:text-foreground py-5 transition-colors">Matches</a> */}
           </nav>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 md:gap-4">
+            <a href="https://x.com/WorldBullCup" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-white transition-colors" aria-label="X (Twitter)">
+              <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </a>
             <a href="https://pump.fun" target="_blank" rel="noreferrer" className="hidden items-center gap-2 rounded border border-gold/30 bg-transparent px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-gold transition-colors hover:bg-gold/10 sm:inline-flex">
               Trade <Zap className="h-3.5 w-3.5 fill-gold" />
             </a>
-            <button className="grid h-8 w-8 place-items-center rounded-full border border-white/10 bg-white/5 text-muted-foreground transition-colors hover:text-white">
-              <User className="h-4 w-4" />
-            </button>
-            <button className="md:hidden text-white">
+            {walletAddress ? (
+              <div className="flex items-center gap-2.5 rounded-full border border-[#5b21b6] bg-[#1e103c] px-3 md:px-4 py-1.5 md:py-2 text-[10px] md:text-[13px] font-mono font-bold text-white">
+                <div className="h-1.5 w-1.5 md:h-2 md:w-2 rounded-full bg-[#00e676] shadow-[0_0_8px_rgba(0,230,118,0.6)]" />
+                <span className="hidden sm:inline">{walletAddress.slice(0, 4)} ... {walletAddress.slice(-4)}</span>
+                <Wallet className="h-3.5 w-3.5 sm:hidden" />
+              </div>
+            ) : (
+              <button onClick={connectPhantom} className="flex items-center gap-2 rounded-full border border-purple-500/50 bg-purple-500/10 px-3 py-1.5 text-[10px] md:text-xs font-bold uppercase tracking-wider text-purple-400 transition-colors hover:bg-purple-500/20">
+                <Wallet className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Connect</span>
+              </button>
+            )}
+            <button className="md:hidden text-white ml-2">
               <Menu className="h-5 w-5" />
             </button>
           </div>
@@ -684,6 +736,7 @@ function Index() {
           autoRefresh={autoRefresh}
           setAutoRefresh={setAutoRefresh}
           index={0}
+          timeLeft={timeLeft}
         />
 
         <div className="mx-auto max-w-7xl px-6 py-16">
