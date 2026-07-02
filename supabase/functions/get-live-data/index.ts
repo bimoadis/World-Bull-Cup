@@ -75,7 +75,10 @@ serve(async (req) => {
 
     // 3. Needs update! Fetch sequentially/with slight delay to avoid rate limit
     // HELIUS_RPC: 10 RPS. DexScreener: 5 RPS.
-    const HELIUS_RPC = Deno.env.get('HELIUS_RPC_URL') || "https://mainnet.helius-rpc.com/?api-key=REPLACE_ME_LATER";
+    let HELIUS_RPC = Deno.env.get('HELIUS_RPC_URL') || Deno.env.get('HELIUS_RPC') || "https://mainnet.helius-rpc.com/?api-key=REPLACE_ME_LATER";
+    if (HELIUS_RPC.startsWith('//')) {
+      HELIUS_RPC = 'https:' + HELIUS_RPC;
+    }
     const BURN_ADDRESS = "1nc1nerator11111111111111111111111111111111";
 
     const updatedStats = [];
