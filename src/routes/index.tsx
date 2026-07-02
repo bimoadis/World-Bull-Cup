@@ -584,10 +584,10 @@ function ChampionshipSection({ champ, players, tournamentsData, autoRefresh, set
                     Season 1 — Live
                   </div>
                   <h3 className="font-display text-xl md:text-2xl font-black text-white mb-2 tracking-tight">
-                    Awaiting its first champion
+                    Throne Vacant
                   </h3>
                   <p className="text-xs text-muted-foreground/80 max-w-md leading-relaxed">
-                    Season 1 is active. The first name carved here hasn't been earned yet. Back your bull in the arena and decide it.
+                    Season 1 is underway. Back your bull in the arena to claim the first crown.
                   </p>
                 </div>
               </div>
