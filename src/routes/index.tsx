@@ -599,7 +599,7 @@ const INTRO_STEPS = [
     stepNum: "01",
     label: "CLAIM",
     title: "CLAIM",
-    desc: "Every cycle, creator fees are claimed from every Player Token — including $LEOBULL, $CRBULL, $KYLBULL, $LAMIBULL and future Bull Tokens — then transferred to the transparent Treasury Wallet.",
+    desc: "Every cycle, creator fees are claimed from every Player Token — including $LIONEL, $CR7, $KYLIAN, $LAMINE and future Bull Tokens — then transferred to the transparent Treasury Wallet.",
     highlight: "Trading across every Bull fuels the entire World Bull Cup ecosystem.",
     accent: "#5BA3D0", // Lionel blue
     accentRgb: "91, 163, 208",
@@ -952,10 +952,10 @@ function Index() {
 
   const mappedPlayers = useMemo(() => {
     return players.map((p: any) => {
-      const isLive = p.is_live || 
-                     (p.market_cap > 0 || p.price > 0 || p.live_holders > 0) || 
-                     LIVE_PLAYER_IDS.includes(p.id) || 
-                     false;
+      const isLive = p.is_live ||
+        (p.market_cap > 0 || p.price > 0 || p.live_holders > 0) ||
+        LIVE_PLAYER_IDS.includes(p.id) ||
+        false;
       return {
         ...p,
         liveMcap: p.market_cap || 0,
