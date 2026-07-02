@@ -112,10 +112,10 @@ function MatchCard({ v, champ, delay, isFinal = false }: any) {
       transition={{ duration: 0.5, delay }}
       whileHover={{ scale: 1.01 }}
       className={`relative overflow-hidden rounded-xl border ${isFinal
-          ? 'border-[#DAA520] shadow-[0_0_15px_rgba(218,165,32,0.2)] h-[185px] md:h-[220px]'
-          : isTbd
-            ? 'border-yellow-500/40 shadow-[0_0_10px_rgba(234,179,8,0.1)] h-[110px] md:h-[130px]'
-            : 'border-white/5 h-[110px] md:h-[130px]'
+        ? 'border-[#DAA520] shadow-[0_0_15px_rgba(218,165,32,0.2)] h-[185px] md:h-[220px]'
+        : isTbd
+          ? 'border-yellow-500/40 shadow-[0_0_10px_rgba(234,179,8,0.1)] h-[110px] md:h-[130px]'
+          : 'border-white/5 h-[110px] md:h-[130px]'
         } bg-[#121316] effect-border-shine w-full`}
     >
       {/* Background ambient light */}
@@ -324,11 +324,10 @@ function ChampionshipSection({ champ, players, tournamentsData, autoRefresh, set
                 </button>
                 <button
                   onClick={() => setAutoRefresh(!autoRefresh)}
-                  className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-medium transition-all ${
-                    autoRefresh
-                      ? 'border-green-500/30 bg-green-500/10 text-green-400'
-                      : 'border-white/10 bg-white/5 text-white/70 hover:bg-white/10'
-                  }`}
+                  className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-medium transition-all ${autoRefresh
+                    ? 'border-green-500/30 bg-green-500/10 text-green-400'
+                    : 'border-white/10 bg-white/5 text-white/70 hover:bg-white/10'
+                    }`}
                 >
                   <div className={`h-1.5 w-1.5 rounded-full ${autoRefresh ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-white/20'}`} />
                   Auto-refresh: {autoRefresh ? 'ON' : 'OFF'}
@@ -559,71 +558,33 @@ function ChampionshipSection({ champ, players, tournamentsData, autoRefresh, set
               })}
             </div>
           ) : (
-            <div 
-              className="rounded-2xl border border-white/5 bg-gradient-to-br from-[#121316]/80 via-[#0A0A0B]/90 to-[#121316]/50 p-6 md:p-8 flex flex-col lg:flex-row items-center justify-between gap-6 hover:border-white/10 transition-all relative overflow-hidden group shadow-2xl"
-            >
-              {/* Radial background ambient glow matching champ accent */}
-              <div 
-                className="absolute -right-20 -bottom-20 h-[300px] w-[300px] rounded-full blur-[100px] opacity-10 pointer-events-none transition-all duration-700 group-hover:opacity-20"
-                style={{ background: champ.accentHex }}
-              />
-              
-              <div className="flex flex-col sm:flex-row items-center sm:items-start lg:items-center gap-6 text-center sm:text-left relative z-10">
-                {/* Glowing Trophy Plinth */}
-                <div className="relative shrink-0 flex items-center justify-center h-20 w-20 rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.04] to-transparent shadow-inner group/plinth overflow-hidden">
-                  <div 
-                    className="absolute inset-0 opacity-10 blur-md bg-gradient-to-br transition-all duration-500 group-hover:scale-125"
-                    style={{ backgroundImage: `radial-gradient(circle, ${champ.accentHex} 0%, transparent 70%)` }}
-                  />
-                  <Trophy className="h-9 w-9 text-muted-foreground/30 animate-pulse relative z-10 transition-transform duration-500 group-hover:scale-110 group-hover:text-muted-foreground/50" />
+            <div className="rounded-xl border border-white/5 border-dashed bg-[#121316]/50 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 hover:bg-white/[0.01] transition-all">
+              <div className="flex items-center gap-6">
+                <div className="h-16 w-16 md:h-20 md:w-20 shrink-0 rounded-xl border border-white/10 flex items-center justify-center bg-black/40">
+                  <Trophy className="h-8 w-8 text-muted-foreground/30 animate-pulse" />
                 </div>
-                
+
                 <div>
-                  <div className="inline-flex items-center gap-1.5 rounded-full bg-gold/10 px-2.5 py-0.5 text-[9px] md:text-[10px] font-bold uppercase tracking-wider text-gold mb-3 border border-gold/20">
-                    <span className="h-1.5 w-1.5 rounded-full bg-gold animate-ping" />
+                  <div className="inline-block rounded-full bg-gold/10 px-2.5 py-0.5 text-[9px] md:text-[10px] font-bold uppercase tracking-wider text-gold mb-2 border border-gold/20">
                     Season 1 — Live
                   </div>
-                  <h3 className="font-display text-xl md:text-2xl font-black text-white mb-2 tracking-tight">
-                    Throne Vacant
+                  <h3 className="font-display text-lg md:text-xl font-extrabold text-white mb-1.5">
+                    Awaiting its first champion
                   </h3>
-                  <p className="text-xs text-muted-foreground/80 max-w-md leading-relaxed">
-                    Season 1 is underway. Back your bull in the arena to claim the first crown.
+                  <p className="text-xs text-muted-foreground max-w-lg leading-relaxed">
+                    Season 1 is live. The first name carved here hasn't been earned yet. Back your bull and decide it.
                   </p>
                 </div>
               </div>
-
-              {/* Provisional Leader card */}
               {ranked[0] && (
-                <div 
-                  className="shrink-0 w-full lg:w-auto rounded-xl bg-white/[0.01] border border-white/5 p-4 sm:p-5 flex items-center justify-between lg:justify-end gap-4 min-w-[280px] hover:bg-white/[0.02] transition-colors relative z-10 effect-border-shine"
-                  style={{ '--glow-color': champ.accentRgb } as any}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="relative shrink-0">
-                      <div 
-                        className="h-12 w-12 rounded-lg border flex items-center justify-center overflow-hidden bg-black/50"
-                        style={{ borderColor: champ.accentHex, boxShadow: `0 0 12px ${champ.accentHex}30` }}
-                      >
-                        <img src={ranked[0].img} alt={ranked[0].name} className="h-full w-full object-cover" />
-                      </div>
-                      <div className="absolute -bottom-1 -right-1 rounded-full bg-[#121316] p-1 border border-white/10 shadow-sm">
-                        <Trophy className="h-3.5 w-3.5" style={{ color: champ.accentHex }} />
-                      </div>
-                    </div>
-                    
-                    <div className="text-left">
-                      <div className="font-mono text-[9px] text-muted-foreground uppercase tracking-widest mb-0.5 flex items-center gap-1">
-                        <span className="h-1 w-1 rounded-full bg-[#00e676] animate-pulse" />
-                        Provisional Leader
-                      </div>
-                      <div className="font-display text-base font-bold text-white leading-tight">{ranked[0].name}</div>
-                      <div className="font-mono text-[11px] font-semibold mt-0.5" style={{ color: champ.accentHex }}>
-                        {ranked[0].metricStr} <span className="text-muted-foreground/60">• leading now</span>
-                      </div>
-                    </div>
+                <div className="shrink-0 rounded-lg bg-white/[0.02] border border-white/5 p-4 text-center md:text-right min-w-[200px] effect-border-shine" style={{ '--glow-color': champ.accentRgb } as any}>
+                  <div className="font-mono text-[9px] text-muted-foreground uppercase tracking-widest mb-1">Provisional Leader</div>
+                  <div className="font-display text-base font-bold text-white mb-0.5">{ranked[0].name}</div>
+                  <div className="font-mono text-xs font-semibold" style={{ color: champ.accentHex }}>
+                    {ranked[0].metricStr} • leading now
                   </div>
-                </div>
-              )}
+                </div>)}
+
             </div>
           )}
         </section>
@@ -994,12 +955,12 @@ function Index() {
       const isLive = p.is_live || LIVE_PLAYER_IDS.includes(p.id) || false;
       return {
         ...p,
-        liveMcap: isLive ? (p.market_cap || 0) : 0,
-        livePrice: isLive ? (p.price || 0) : 0,
-        liveChange: isLive ? (p.change_24h || 0) : 0,
-        liveBurned: isLive ? (p.tokens_burned || 0) : 0,
-        liveHolders: isLive ? (p.live_holders || 0) : 0,
-        up: isLive ? ((p.change_24h || 0) >= 0) : true,
+        liveMcap: p.market_cap || 0,
+        livePrice: p.price || 0,
+        liveChange: p.change_24h || 0,
+        liveBurned: p.tokens_burned || 0,
+        liveHolders: p.live_holders || 0,
+        up: (p.change_24h || 0) >= 0,
         ticker: p.ticker_symbol,
         img: p.image_url,
         isLive
