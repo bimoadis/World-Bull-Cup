@@ -955,12 +955,12 @@ function Index() {
       const isLive = p.is_live || LIVE_PLAYER_IDS.includes(p.id) || false;
       return {
         ...p,
-        liveMcap: p.market_cap || 0,
-        livePrice: p.price || 0,
-        liveChange: p.change_24h || 0,
-        liveBurned: p.tokens_burned || 0,
-        liveHolders: p.live_holders || 0,
-        up: (p.change_24h || 0) >= 0,
+        liveMcap: isLive ? (p.market_cap || 0) : 0,
+        livePrice: isLive ? (p.price || 0) : 0,
+        liveChange: isLive ? (p.change_24h || 0) : 0,
+        liveBurned: isLive ? (p.tokens_burned || 0) : 0,
+        liveHolders: isLive ? (p.live_holders || 0) : 0,
+        up: isLive ? ((p.change_24h || 0) >= 0) : true,
         ticker: p.ticker_symbol,
         img: p.image_url,
         isLive
