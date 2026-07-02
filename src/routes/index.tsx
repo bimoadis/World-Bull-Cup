@@ -952,7 +952,11 @@ function Index() {
 
   const mappedPlayers = useMemo(() => {
     return players.map((p: any) => {
-      const isLive = p.is_live || LIVE_PLAYER_IDS.includes(p.id) || false;
+      const isLive = p.is_live || 
+                     (p.pair_address && p.pair_address !== "") || 
+                     (p.contract && p.contract !== "Soon" && p.contract !== "TBA") || 
+                     LIVE_PLAYER_IDS.includes(p.id) || 
+                     false;
       return {
         ...p,
         liveMcap: p.market_cap || 0,

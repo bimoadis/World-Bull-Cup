@@ -88,22 +88,43 @@ serve(async (req) => {
       let newStats = { ...stats };
       
       // 3a. DexScreener (Market Cap, Price, Volume)
+      let pair = null;
       if (p.pair_address) {
         try {
           const dexRes = await fetch(`https://api.dexscreener.com/latest/dex/pairs/solana/${p.pair_address}`);
           if (dexRes.ok) {
             const data = await dexRes.json();
-            const pair = data?.pairs?.[0] || data?.pair;
-            if (pair) {
-              newStats.market_cap = Number(pair.marketCap ?? pair.fdv ?? 0);
-              newStats.price = Number(pair.priceUsd ?? 0);
-              newStats.volume_24h = Number(pair.volume?.h24 ?? 0);
-              newStats.change_24h = Number(pair.priceChange?.h24 ?? 0);
+            pair = data?.pairs?.[0] || data?.pair;
+          }
+        } catch(e) {
+          console.warn("DexScreener fetch error for", p.id, e);
+        }
+      } else if (p.contract && p.contract !== "Soon" && p.contract !== "TBA") {
+        try {
+          const dexRes = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${p.contract}`);
+          if (dexRes.ok) {
+            const data = await dexRes.json();
+            const solanaPairs = data?.pairs?.filter((pr: any) => pr.chainId === 'solana');
+            pair = solanaPairs?.[0];
+            if (pair && pair.pairAddress) {
+              console.log(`Auto-detected pair address for ${p.id}: ${pair.pairAddress}`);
+              await supabaseClient
+                .from('players')
+                .update({ pair_address: pair.pairAddress })
+                .eq('id', p.id);
+              p.pair_address = pair.pairAddress;
             }
           }
         } catch(e) {
-          console.warn("DexScreener fetch error for", p.id);
+          console.warn("DexScreener token fetch error for", p.id, e);
         }
+      }
+
+      if (pair) {
+        newStats.market_cap = Number(pair.marketCap ?? pair.fdv ?? 0);
+        newStats.price = Number(pair.priceUsd ?? 0);
+        newStats.volume_24h = Number(pair.volume?.h24 ?? 0);
+        newStats.change_24h = Number(pair.priceChange?.h24 ?? 0);
       }
       
       // Artificial delay to respect 5 RPS (Wait 250ms -> ~4 requests per sec max)
