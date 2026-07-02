@@ -55,7 +55,7 @@ function PlayerDetail() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <a href={player.contract !== "Soon" ? `https://pump.fun/${player.contract}` : "https://pump.fun"} target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded border border-gold/30 bg-transparent px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-gold transition-colors hover:bg-gold/10">
+            <a href={player.contract && player.contract !== "Soon" && player.contract !== "TBA" ? `https://solscan.io/token/${player.contract}` : "https://solscan.io"} target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded border border-gold/30 bg-transparent px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-gold transition-colors hover:bg-gold/10">
               Trade {player.ticker_symbol} <Zap className="h-3.5 w-3.5 fill-gold" />
             </a>
           </div>
