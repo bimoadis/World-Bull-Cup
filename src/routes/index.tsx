@@ -263,51 +263,43 @@ function ChampionshipSection({ champ, players, tournamentsData, autoRefresh, set
   }, [tournamentsData, champ, players]);
 
   const bracket = useMemo(() => {
-    const p1 = players.find((p: any) => p.id === "lionel") || players[0];
-    const p2 = players.find((p: any) => p.id === "kylian") || players[1];
-    const p3 = players.find((p: any) => p.id === "cristiano") || players[2];
-    const p4 = players.find((p: any) => p.id === "lamine") || players[3];
+    if (!tournamentsData?.tournaments || !tournamentsData?.matches) return null;
+    const dbId = champ.id.toLowerCase() === "holders" ? "holder" : champ.id.toLowerCase();
+    const tournament = tournamentsData.tournaments.find((t: any) => t.championship_id === dbId);
+    if (!tournament) return null;
 
-    // SF1: Lionel vs Lamine
-    const m1a = p1[champ.metric] || 0;
-    const m1b = p4[champ.metric] || 0;
-    const m1Total = m1a + m1b;
-    const sf1 = {
-      a: p1, b: p4,
-      pctA: m1Total > 0 ? Math.round((m1a / m1Total) * 100) : 50,
-      pctB: m1Total > 0 ? Math.round((m1b / m1Total) * 100) : 50,
-      winner: m1a >= m1b ? p1 : p4,
+    const matches = tournamentsData.matches.filter((m: any) => m.tournament_id === tournament.id);
+    const sf1Match = matches.find((m: any) => m.round_name === 'SEMI-FINAL 1');
+    const sf2Match = matches.find((m: any) => m.round_name === 'SEMI-FINAL 2');
+    const finalMatch = matches.find((m: any) => m.is_final);
+
+    const getPlayer = (id: string) => players.find((p: any) => p.id === id) || { name: 'TBD', img: '/bull-none.svg', [champ.metric]: 0, ticker: 'TBD', accent: '#EAB308' };
+
+    const makeMatchObj = (m: any) => {
+      if (!m) return { a: getPlayer(''), b: getPlayer(''), pctA: 50, pctB: 50, winner: null, matchTime: null };
+      const a = getPlayer(m.player1_id);
+      const b = getPlayer(m.player2_id);
+      const ma = a[champ.metric] || 0;
+      const mb = b[champ.metric] || 0;
+      const total = ma + mb;
+      return {
+        a, b,
+        pctA: total > 0 ? Math.round((ma / total) * 100) : 50,
+        pctB: total > 0 ? Math.round((mb / total) * 100) : 50,
+        winner: m.winner_id ? getPlayer(m.winner_id) : (ma >= mb ? a : b),
+        matchTime: m.match_time
+      }
     };
-
-    // SF2: Kylian vs Cristiano
-    const m2a = p2[champ.metric] || 0;
-    const m2b = p3[champ.metric] || 0;
-    const m2Total = m2a + m2b;
-    const sf2 = {
-      a: p2, b: p3,
-      pctA: m2Total > 0 ? Math.round((m2a / m2Total) * 100) : 50,
-      pctB: m2Total > 0 ? Math.round((m2b / m2Total) * 100) : 50,
-      winner: m2a >= m2b ? p2 : p3,
-    };
-
-    // Final
-    const w1 = sf1.winner;
-    const w2 = sf2.winner;
-    const fa = w1[champ.metric] || 0;
-    const fb = w2[champ.metric] || 0;
-    const fTotal = fa + fb;
 
     return {
-      sf1,
-      sf2,
-      final: {
-        a: w1, b: w2,
-        pctA: fTotal > 0 ? Math.round((fa / fTotal) * 100) : 50,
-        pctB: fTotal > 0 ? Math.round((fb / fTotal) * 100) : 50,
-      },
-      champion: fa >= fb ? w1 : w2
-    };
-  }, [players, champ]);
+      sf1: makeMatchObj(sf1Match),
+      sf2: makeMatchObj(sf2Match),
+      final: makeMatchObj(finalMatch),
+      tournament
+    }
+  }, [tournamentsData, champ, players]);
+
+  if (!bracket || !bracket.tournament) return <div className="py-16 text-center text-white min-h-[500px] flex items-center justify-center">Loading tournament data...</div>;
 
   return (
     <div className={`py-16 ${index % 2 === 1 ? 'bg-[#0D0E10]' : 'bg-[#0A0A0B]'}`}>
