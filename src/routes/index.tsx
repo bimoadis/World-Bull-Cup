@@ -230,15 +230,15 @@ function MatchCountdown({ matchTime, status }: { matchTime: string | null; statu
 
 function ChampionshipSection({ champ, players, tournamentsData, autoRefresh, setAutoRefresh, index, refetch, isFetching }: any) {
   const ranked = useMemo(() => {
-    const sorted = [...(players || [])].filter(Boolean).sort((a: any, b: any) => (b[champ.metric] || 0) - (a[champ.metric] || 0));
-    const total = sorted.reduce((sum, p) => sum + (p[champ.metric] || 0), 0);
+    const sorted = [...(players || [])].filter(Boolean).sort((a: any, b: any) => Number(b[champ.metric] || 0) - Number(a[champ.metric] || 0));
+    const total = sorted.reduce((sum, p) => sum + Number(p[champ.metric] || 0), 0);
 
     return sorted.map((b: any, i: number) => {
-      const share = total > 0 ? b[champ.metric] / total : 0;
+      const share = total > 0 ? Number(b[champ.metric] || 0) / total : 0;
       return {
         ...b,
         rank: i + 1,
-        metricStr: champ.formatData(b[champ.metric] || 0),
+        metricStr: champ.formatData(Number(b[champ.metric] || 0)),
         oddsStr: shareToOdds(share),
         shareStr: (share * 100).toFixed(1),
         sharePct: share * 100
@@ -324,10 +324,14 @@ function ChampionshipSection({ champ, players, tournamentsData, autoRefresh, set
                 </button>
                 <button
                   onClick={() => setAutoRefresh(!autoRefresh)}
-                  className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-medium text-white transition-colors hover:bg-white/10"
+                  className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-medium transition-all ${
+                    autoRefresh
+                      ? 'border-green-500/30 bg-green-500/10 text-green-400'
+                      : 'border-white/10 bg-white/5 text-white/70 hover:bg-white/10'
+                  }`}
                 >
                   <div className={`h-1.5 w-1.5 rounded-full ${autoRefresh ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-white/20'}`} />
-                  Auto-refresh
+                  Auto-refresh: {autoRefresh ? 'ON' : 'OFF'}
                 </button>
               </div>
             )}
@@ -354,7 +358,7 @@ function ChampionshipSection({ champ, players, tournamentsData, autoRefresh, set
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-10px" }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}
-                  key={b.rank} className={`relative grid ${champ.showChart ? 'grid-cols-[50px_minmax(0,1.8fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_100px]' : 'grid-cols-[50px_minmax(0,1.8fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_100px]'} items-center gap-4 border-b border-white/5 px-6 py-4 transition-colors last:border-0 hover:bg-white/[0.02]`}
+                  key={b.id} className={`relative grid ${champ.showChart ? 'grid-cols-[50px_minmax(0,1.8fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_100px]' : 'grid-cols-[50px_minmax(0,1.8fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_100px]'} items-center gap-4 border-b border-white/5 px-6 py-4 transition-colors last:border-0 hover:bg-white/[0.02]`}
                   style={b.rank === 1 ? { background: `linear-gradient(to right, ${champ.accentHex}20, transparent)` } : {}}
                 >
                   {/* Left Border for rank 1 */}
@@ -383,7 +387,12 @@ function ChampionshipSection({ champ, players, tournamentsData, autoRefresh, set
                           <span className="inline-block rounded bg-yellow-500/20 px-1.5 py-[1px] text-[8px] font-bold uppercase tracking-wider text-yellow-400 effect-reflection">NEW</span>
                         )}
                       </div>
-                      <div className="truncate font-mono text-[10px] uppercase text-muted-foreground">${b.contract}</div>
+                      <div className="truncate font-mono text-[10px] uppercase text-muted-foreground flex items-center gap-1.5 flex-wrap">
+                        <span>${b.ticker}</span>
+                        {!b.isLive && (
+                          <span className="inline-block rounded-full bg-white/5 border border-white/10 px-1.5 py-[0.5px] text-[7px] font-mono tracking-wider text-muted-foreground select-none uppercase font-bold">PRE-LAUNCH</span>
+                        )}
+                      </div>
                     </div>
                   </Link>
 
@@ -408,18 +417,29 @@ function ChampionshipSection({ champ, players, tournamentsData, autoRefresh, set
                   <div className="text-right font-mono text-sm font-semibold text-white relative z-10">{b.shareStr}%</div>
 
                   <div className="text-center relative z-10">
-                    <a href={b.contract !== "Soon" ? `https://pump.fun/${b.contract}` : "https://pump.fun"} target="_blank" rel="noreferrer"
-                      className="inline-block rounded border px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-colors"
-                      style={b.rank === 1
-                        ? { borderColor: champ.accentHex, color: champ.accentHex, backgroundColor: `${champ.accentHex}15` }
-                        : { borderColor: 'rgba(255,255,255,0.1)', color: 'hsl(var(--muted-foreground))', backgroundColor: 'transparent' }
-                      }
-                    >
-                      Trade
-                    </a>
+                    {b.isLive ? (
+                      <a href={b.contract && b.contract !== "Soon" && b.contract !== "TBA" ? `https://pump.fun/coin/${b.contract}` : "https://pump.fun"} target="_blank" rel="noreferrer"
+                        className="inline-block rounded border px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-colors hover:opacity-90"
+                        style={b.rank === 1
+                          ? { borderColor: champ.accentHex, color: champ.accentHex, backgroundColor: `${champ.accentHex}15` }
+                          : { borderColor: 'rgba(255,255,255,0.1)', color: 'hsl(var(--muted-foreground))', backgroundColor: 'transparent' }
+                        }
+                      >
+                        Trade
+                      </a>
+                    ) : (
+                      <button disabled className="inline-block rounded border border-white/5 px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider text-muted-foreground/40 bg-white/[0.01] cursor-not-allowed select-none">
+                        Launches soon
+                      </button>
+                    )}
                   </div>
                 </motion.div>
               ))}
+
+              {/* TABLE FOOTER DISCLAIMER */}
+              <div className="border-t border-white/5 bg-white/[0.01] px-6 py-3 text-center font-mono text-[9px] text-muted-foreground/40 tracking-wider">
+                Not betting. Not financial advice. "Odds" are a visual reading of metric share, not a wager and not a payout.
+              </div>
             </div>
           </div>
         </section>
@@ -487,13 +507,15 @@ function ChampionshipSection({ champ, players, tournamentsData, autoRefresh, set
         </section>
 
         {/* PAST WINNERS HISTORY */}
-        {history && history.length > 0 && (
-          <section className="mb-8 mt-16">
-            <div className="mb-8">
-              <div className={`font-mono text-[10px] font-bold tracking-[0.2em] ${champ.accentText} uppercase mb-1`}>HALL OF FAME</div>
-              <h2 className="font-display text-3xl font-extrabold text-white">PAST WINNERS</h2>
-            </div>
+        <section className="mb-8 mt-16">
+          <div className="mb-8">
+            <div className={`font-mono text-[10px] font-bold tracking-[0.2em] ${champ.accentText} uppercase mb-1`}>HALL OF FAME</div>
+            <h2 className="font-display text-3xl font-extrabold text-white">
+              {history && history.length > 0 ? "PAST WINNERS" : "Awaiting its first champion"}
+            </h2>
+          </div>
 
+          {history && history.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {history.map((h: any, i: number) => {
                 const winnerPlayer = h.winnerPlayer;
@@ -536,8 +558,36 @@ function ChampionshipSection({ champ, players, tournamentsData, autoRefresh, set
                 );
               })}
             </div>
-          </section>
-        )}
+          ) : (
+            <div className="rounded-xl border border-white/5 border-dashed bg-[#121316]/50 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 hover:bg-white/[0.01] transition-all">
+              <div className="flex items-center gap-6">
+                <div className="h-16 w-16 md:h-20 md:w-20 shrink-0 rounded-xl border border-white/10 flex items-center justify-center bg-black/40">
+                  <Trophy className="h-8 w-8 text-muted-foreground/30 animate-pulse" />
+                </div>
+                <div>
+                  <div className="inline-block rounded-full bg-gold/10 px-2.5 py-0.5 text-[9px] md:text-[10px] font-bold uppercase tracking-wider text-gold mb-2 border border-gold/20">
+                    Season 1 — Live
+                  </div>
+                  <h3 className="font-display text-lg md:text-xl font-extrabold text-white mb-1.5">
+                    Awaiting its first champion
+                  </h3>
+                  <p className="text-xs text-muted-foreground max-w-lg leading-relaxed">
+                    Season 1 is live. The first name carved here hasn't been earned yet. Back your bull and decide it.
+                  </p>
+                </div>
+              </div>
+              {ranked[0] && (
+                <div className="shrink-0 rounded-lg bg-white/[0.02] border border-white/5 p-4 text-center md:text-right min-w-[200px] effect-border-shine" style={{ '--glow-color': champ.accentRgb } as any}>
+                  <div className="font-mono text-[9px] text-muted-foreground uppercase tracking-widest mb-1">Provisional Leader</div>
+                  <div className="font-display text-base font-bold text-white mb-0.5">{ranked[0].name}</div>
+                  <div className="font-mono text-xs font-semibold" style={{ color: champ.accentHex }}>
+                    {ranked[0].metricStr} • leading now
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </section>
       </div>
     </div>
   );
@@ -898,8 +948,11 @@ function Index() {
     return () => clearInterval(timer);
   }, []);
 
+  const LIVE_PLAYER_IDS: string[] = []; // List of live player IDs. Empty during pre-launch phase.
+
   const mappedPlayers = useMemo(() => {
     return players.map((p: any) => {
+      const isLive = p.is_live || LIVE_PLAYER_IDS.includes(p.id) || false;
       return {
         ...p,
         liveMcap: p.market_cap || 0,
@@ -909,7 +962,8 @@ function Index() {
         liveHolders: p.live_holders || 0,
         up: (p.change_24h || 0) >= 0,
         ticker: p.ticker_symbol,
-        img: p.image_url
+        img: p.image_url,
+        isLive
       };
     });
   }, [players]);
