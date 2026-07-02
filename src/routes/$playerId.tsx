@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Trophy, Zap } from "lucide-react";
 import logo from "@/assets/logo.png";
-import { INITIAL_PLAYERS } from "@/data/players";
-import { useLiveData } from "@/hooks/useLiveData";
+import { usePlayersData } from "@/hooks/useLiveData";
 import { fmtUSD, fmtPrice } from "@/utils";
 import { useMemo } from "react";
 
@@ -12,11 +11,11 @@ export const Route = createFileRoute("/$playerId")({
 
 function PlayerDetail() {
   const { playerId } = Route.useParams();
-  const { data: liveUpdates } = useLiveData(INITIAL_PLAYERS);
+  const { data: players = [] } = usePlayersData(true);
   
   const player = useMemo(() => {
-    return INITIAL_PLAYERS.find(p => p.id === playerId);
-  }, [playerId]);
+    return players.find(p => p.id === playerId);
+  }, [playerId, players]);
 
   if (!player) {
     return (
@@ -29,13 +28,12 @@ function PlayerDetail() {
     );
   }
 
-  const liveData = liveUpdates?.[player.id] || {};
-  const mcap = liveData.marketCap || player.marketCap || 0;
-  const price = liveData.price || player.price || 0;
-  const change24h = liveData.change24h || player.change24h || 0;
-  const volume24h = liveData.volume24h || player.volume24h || 0;
-  const tokensBurned = liveData.tokensBurned || player.tokensBurned || 0;
-  const holders = liveData.holders || player.holders || 0;
+  const mcap = player.market_cap || 0;
+  const price = player.price || 0;
+  const change24h = player.change_24h || 0;
+  const volume24h = player.volume_24h || 0;
+  const tokensBurned = player.tokens_burned || 0;
+  const holders = player.live_holders || 0;
   
   const up = change24h >= 0;
 
@@ -58,7 +56,7 @@ function PlayerDetail() {
           </div>
           <div className="flex items-center gap-4">
             <a href={player.contract !== "Soon" ? `https://pump.fun/${player.contract}` : "https://pump.fun"} target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded border border-gold/30 bg-transparent px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-gold transition-colors hover:bg-gold/10">
-              Trade {player.ticker} <Zap className="h-3.5 w-3.5 fill-gold" />
+              Trade {player.ticker_symbol} <Zap className="h-3.5 w-3.5 fill-gold" />
             </a>
           </div>
         </div>
@@ -69,7 +67,7 @@ function PlayerDetail() {
         {/* PLAYER HERO */}
         <div className="flex flex-col md:flex-row gap-8 items-center md:items-start mb-12">
           <div className="w-40 h-40 md:w-56 md:h-56 shrink-0 rounded-2xl overflow-hidden border-2" style={{ borderColor: player.accent }}>
-            <img src={player.img} alt={player.name} className="w-full h-full object-cover" />
+            <img src={player.image_url} alt={player.name} className="w-full h-full object-cover" />
           </div>
           
           <div className="flex-1 text-center md:text-left">
@@ -78,7 +76,7 @@ function PlayerDetail() {
               <span className="font-mono text-xs font-bold tracking-widest text-muted-foreground uppercase">{player.nation}</span>
             </div>
             <h1 className="font-display text-5xl md:text-7xl font-black text-white mb-2">{player.name}</h1>
-            <div className="font-mono text-lg text-gold mb-8">${player.ticker}</div>
+            <div className="font-mono text-lg text-gold mb-8">${player.ticker_symbol}</div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-[#121316] border border-white/5 rounded-xl p-4">
@@ -118,9 +116,9 @@ function PlayerDetail() {
         <div className="mb-12">
           <div className="font-mono text-[10px] font-bold tracking-[0.2em] text-gold uppercase mb-4">LIVE CHART</div>
           <div className="rounded-xl border border-white/5 bg-[#121316] overflow-hidden h-[600px] relative">
-            {player.pairAddress ? (
+            {player.pair_address ? (
               <iframe 
-                src={`https://dexscreener.com/solana/${player.pairAddress}?embed=1&theme=dark&trades=0&info=0`}
+                src={`https://dexscreener.com/solana/${player.pair_address}?embed=1&theme=dark&trades=0&info=0`}
                 className="w-full h-full border-0"
               />
             ) : (

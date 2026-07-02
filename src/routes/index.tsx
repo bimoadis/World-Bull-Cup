@@ -5,8 +5,8 @@ import arenaHero from "@/assets/arena-bg.png";
 import logo from "@/assets/logo.png";
 // @ts-ignore
 import bannerBg from "@/assets/banner-bg.png";
-import { INITIAL_PLAYERS } from "@/data/players";
-import { useLiveData } from "@/hooks/useLiveData";
+import { usePlayersData } from "@/hooks/useLiveData";
+import { useTournamentsData } from "@/hooks/useTournaments";
 import { shareToOdds, fmtUSD, fmtPrice } from "@/utils";
 import { useMemo, useState, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -103,6 +103,7 @@ function Sparkline({ up }: { up: boolean }) {
 }
 
 function MatchCard({ v, champ, delay, isFinal = false }: any) {
+  const isTbd = v.a.name === 'TBD' || v.b.name === 'TBD';
   return (
     <motion.div 
       initial={{ opacity: 0, y: 30 }}
@@ -110,7 +111,13 @@ function MatchCard({ v, champ, delay, isFinal = false }: any) {
       viewport={{ once: true, margin: "-20px" }}
       transition={{ duration: 0.5, delay }}
       whileHover={{ scale: 1.01 }}
-      className={`relative overflow-hidden rounded-xl border ${isFinal ? 'border-[#DAA520] shadow-[0_0_15px_rgba(218,165,32,0.2)] h-[185px] md:h-[220px]' : 'border-white/5 h-[110px] md:h-[130px]'} bg-[#121316] effect-border-shine w-full`}
+      className={`relative overflow-hidden rounded-xl border ${
+        isFinal 
+          ? 'border-[#DAA520] shadow-[0_0_15px_rgba(218,165,32,0.2)] h-[185px] md:h-[220px]' 
+          : isTbd 
+            ? 'border-yellow-500/40 shadow-[0_0_10px_rgba(234,179,8,0.1)] h-[110px] md:h-[130px]' 
+            : 'border-white/5 h-[110px] md:h-[130px]'
+      } bg-[#121316] effect-border-shine w-full`}
     >
       {/* Background ambient light */}
       <div className="absolute inset-0 pointer-events-none mix-blend-screen">
@@ -183,18 +190,56 @@ function MatchCard({ v, champ, delay, isFinal = false }: any) {
   );
 }
 
-function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, index, timeLeft, refetch, isFetching }: any) {
-  // Sort and rank players for this specific metric
+function MatchCountdown({ matchTime, status }: { matchTime: string | null; status: string }) {
+  const [timeLeft, setTimeLeft] = useState<{ d: string; h: string; m: string; s: string } | null>(null);
+
+  useEffect(() => {
+    if (status !== 'active' || !matchTime) {
+      setTimeLeft(null);
+      return;
+    }
+    const target = new Date(matchTime);
+
+    const updateTimer = () => {
+      const now = Date.now();
+      const distance = target.getTime() - now;
+      if (distance <= 0) {
+        setTimeLeft({ d: "00", h: "00", m: "00", s: "00" });
+        return;
+      }
+      const d = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, "0");
+      const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, "0");
+      const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, "0");
+      const s = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, "0");
+      setTimeLeft({ d, h, m, s });
+    };
+
+    updateTimer();
+    const timer = setInterval(updateTimer, 1000);
+    return () => clearInterval(timer);
+  }, [matchTime, status]);
+
+  if (!timeLeft) return null;
+
+  return (
+    <span className="text-[9px] md:text-[10px] text-muted-foreground flex gap-1.5 items-center bg-black/40 px-2.5 py-0.5 rounded-full border border-white/5 mt-1">
+      <span className="h-1.5 w-1.5 rounded-full bg-gold animate-pulse shadow-[0_0_8px_rgba(218,165,32,0.6)]" />
+      MATCH IN {timeLeft.d}D : {timeLeft.h}H : {timeLeft.m}M : {timeLeft.s}S
+    </span>
+  );
+}
+
+function ChampionshipSection({ champ, players, tournamentsData, autoRefresh, setAutoRefresh, index, refetch, isFetching }: any) {
   const ranked = useMemo(() => {
-    const sorted = [...players].sort((a: any, b: any) => b[champ.metric] - a[champ.metric]);
-    const total = sorted.reduce((sum, p) => sum + p[champ.metric], 0);
+    const sorted = [...(players || [])].filter(Boolean).sort((a: any, b: any) => (b[champ.metric] || 0) - (a[champ.metric] || 0));
+    const total = sorted.reduce((sum, p) => sum + (p[champ.metric] || 0), 0);
 
     return sorted.map((b: any, i: number) => {
       const share = total > 0 ? b[champ.metric] / total : 0;
       return {
         ...b,
         rank: i + 1,
-        metricStr: champ.formatData(b[champ.metric]),
+        metricStr: champ.formatData(b[champ.metric] || 0),
         oddsStr: shareToOdds(share),
         shareStr: (share * 100).toFixed(1),
         sharePct: share * 100
@@ -202,52 +247,83 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
     });
   }, [players, champ]);
 
+  const history = useMemo(() => {
+    if (!tournamentsData?.hallOfFame) return [];
+    return tournamentsData.hallOfFame
+      .filter((h: any) => h.championship_id === champ.id.toLowerCase())
+      .map((h: any) => {
+         const p = players.find((p: any) => p.id === h.winner_player_id);
+         return {
+           round: `Season ${h.season_number}`,
+           winner: p?.name || 'Unknown',
+           val: 'Winner',
+           date: new Date(h.end_date).toLocaleDateString(),
+           winnerPlayer: p ? { ...p, img: p.image_url } : null
+         }
+      });
+  }, [tournamentsData, champ, players]);
+
   const bracket = useMemo(() => {
-    const p1 = players.find((p: any) => p.id === "lionel") || players[0];
-    const p2 = players.find((p: any) => p.id === "kylian") || players[1];
-    const p3 = players.find((p: any) => p.id === "cristiano") || players[2];
-    const p4 = players.find((p: any) => p.id === "lamine") || players[3];
+     if (!tournamentsData?.tournaments || !tournamentsData?.matches) return null;
+     const dbId = champ.id.toLowerCase() === "holders" ? "holder" : champ.id.toLowerCase();
+     const tournament = tournamentsData.tournaments.find((t: any) => t.championship_id === dbId);
+     if (!tournament) return null;
 
-    // SF1: Lionel vs Lamine
-    const m1a = p1[champ.metric] || 0;
-    const m1b = p4[champ.metric] || 0;
-    const m1Total = m1a + m1b;
-    const sf1 = {
-      a: p1, b: p4,
-      pctA: m1Total > 0 ? Math.round((m1a / m1Total) * 100) : 50,
-      pctB: m1Total > 0 ? Math.round((m1b / m1Total) * 100) : 50,
-      winner: m1a >= m1b ? p1 : p4,
-    };
+     const matches = tournamentsData.matches.filter((m: any) => m.tournament_id === tournament.id);
+     const sf1Match = matches.find((m: any) => m.round_name === 'SEMI-FINAL 1');
+     const sf2Match = matches.find((m: any) => m.round_name === 'SEMI-FINAL 2');
+     const finalMatch = matches.find((m: any) => m.is_final);
 
-    // SF2: Kylian vs Cristiano
-    const m2a = p2[champ.metric] || 0;
-    const m2b = p3[champ.metric] || 0;
-    const m2Total = m2a + m2b;
-    const sf2 = {
-      a: p2, b: p3,
-      pctA: m2Total > 0 ? Math.round((m2a / m2Total) * 100) : 50,
-      pctB: m2Total > 0 ? Math.round((m2b / m2Total) * 100) : 50,
-      winner: m2a >= m2b ? p2 : p3,
-    };
+     const getPlayer = (id: string) => players.find((p: any) => p.id === id) || { name: 'TBD', img: '/bull-none.svg', [champ.metric]: 0, ticker: 'TBD', accent: '#EAB308' };
 
-    // Final
-    const w1 = sf1.winner;
-    const w2 = sf2.winner;
-    const fa = w1[champ.metric] || 0;
-    const fb = w2[champ.metric] || 0;
-    const fTotal = fa + fb;
+     const makeMatchObj = (m: any) => {
+        if (!m) return { a: getPlayer(''), b: getPlayer(''), pctA: 50, pctB: 50, winner: null, matchTime: null };
+        const a = getPlayer(m.player1_id);
+        const b = getPlayer(m.player2_id);
+        const ma = a[champ.metric] || 0;
+        const mb = b[champ.metric] || 0;
+        const total = ma + mb;
+        return {
+          a, b,
+          pctA: total > 0 ? Math.round((ma / total) * 100) : 50,
+          pctB: total > 0 ? Math.round((mb / total) * 100) : 50,
+          winner: m.winner_id ? getPlayer(m.winner_id) : (ma >= mb ? a : b),
+          matchTime: m.match_time
+        }
+     };
+
+     return {
+       sf1: makeMatchObj(sf1Match),
+       sf2: makeMatchObj(sf2Match),
+       final: makeMatchObj(finalMatch),
+       tournament
+     }
+  }, [tournamentsData, champ, players]);
+
+  const [timeLeft, setTimeLeft] = useState({ d: "00", h: "00", m: "00", s: "00" });
+
+  useEffect(() => {
+    if (!bracket?.tournament) return;
+    const isWaiting = bracket.tournament.status === 'waiting';
+    const target = isWaiting ? new Date(new Date(bracket.tournament.end_time).getTime() + (24*60*60*1000)) : new Date(bracket.tournament.end_time);
     
-    return {
-      sf1,
-      sf2,
-      final: {
-        a: w1, b: w2,
-        pctA: fTotal > 0 ? Math.round((fa / fTotal) * 100) : 50,
-        pctB: fTotal > 0 ? Math.round((fb / fTotal) * 100) : 50,
-      },
-      champion: fa >= fb ? w1 : w2
-    };
-  }, [players, champ]);
+    const timer = setInterval(() => {
+      const now = Date.now();
+      const distance = target.getTime() - now;
+      if (distance <= 0) {
+        setTimeLeft({ d: "00", h: "00", m: "00", s: "00" });
+        return;
+      }
+      const d = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, "0");
+      const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, "0");
+      const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, "0");
+      const s = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, "0");
+      setTimeLeft({ d, h, m, s });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [bracket]);
+
+  if (!bracket || !bracket.tournament) return <div className="py-16 text-center text-white min-h-[500px] flex items-center justify-center">Loading tournament data...</div>;
 
   return (
     <div className={`py-16 ${index % 2 === 1 ? 'bg-[#0D0E10]' : 'bg-[#0A0A0B]'}`}>
@@ -385,7 +461,10 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
             <div className="w-full flex flex-col lg:flex-row gap-6 lg:gap-12 justify-center items-center relative z-10">
               {/* SF 1 */}
               <div className="w-full max-w-xl">
-                <div className="text-center font-mono text-[10px] md:text-xs font-bold tracking-[0.2em] text-muted-foreground uppercase mb-3">DAY 1 • SEMI-FINAL 1</div>
+                <div className="text-center font-mono text-[10px] md:text-xs font-bold tracking-[0.2em] text-muted-foreground uppercase mb-3 flex flex-col items-center gap-1">
+                  <span>DAY 1 • SEMI-FINAL 1</span>
+                  <MatchCountdown matchTime={bracket.sf1.matchTime} status={bracket.tournament.status} />
+                </div>
                 <MatchCard v={bracket.sf1} champ={champ} delay={0.1} />
                 <div className="flex flex-col items-center mt-3 text-white/20">
                   <div className="w-px h-6 border-l border-dashed border-white/20" />
@@ -395,7 +474,10 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
 
               {/* SF 2 */}
               <div className="w-full max-w-xl">
-                <div className="text-center font-mono text-[10px] md:text-xs font-bold tracking-[0.2em] text-muted-foreground uppercase mb-3">DAY 1 • SEMI-FINAL 2</div>
+                <div className="text-center font-mono text-[10px] md:text-xs font-bold tracking-[0.2em] text-muted-foreground uppercase mb-3 flex flex-col items-center gap-1">
+                  <span>DAY 1 • SEMI-FINAL 2</span>
+                  <MatchCountdown matchTime={bracket.sf2.matchTime} status={bracket.tournament.status} />
+                </div>
                 <MatchCard v={bracket.sf2} champ={champ} delay={0.2} />
                 <div className="flex flex-col items-center mt-3 text-white/20">
                   <div className="w-px h-6 border-l border-dashed border-white/20" />
@@ -418,12 +500,7 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
             <div className="w-full relative z-10 mt-6 lg:mt-0">
               <div className="text-center font-mono text-[11px] md:text-sm font-bold tracking-[0.2em] text-gold uppercase mb-3 flex flex-col items-center gap-1">
                 <span>DAY 2 • THE FINAL</span>
-                {timeLeft && (
-                  <span className="text-[9px] md:text-[10px] text-muted-foreground flex gap-1.5 items-center bg-black/40 px-2.5 py-0.5 rounded-full border border-white/5 mt-1">
-                    <span className="h-1.5 w-1.5 rounded-full bg-gold animate-pulse shadow-[0_0_8px_rgba(218,165,32,0.6)]" />
-                    MATCH IN {timeLeft.d}D : {timeLeft.h}H : {timeLeft.m}M : {timeLeft.s}S
-                  </span>
-                )}
+                <MatchCountdown matchTime={bracket.final.matchTime} status={bracket.tournament.status} />
               </div>
               <MatchCard v={bracket.final} champ={champ} delay={0.4} isFinal={true} />
             </div>
@@ -434,7 +511,7 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
         </section>
 
         {/* PAST WINNERS HISTORY */}
-        {champ.history && champ.history.length > 0 && (
+        {history && history.length > 0 && (
           <section className="mb-8 mt-16">
             <div className="mb-8">
               <div className={`font-mono text-[10px] font-bold tracking-[0.2em] ${champ.accentText} uppercase mb-1`}>HALL OF FAME</div>
@@ -442,8 +519,8 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {champ.history.map((h: any, i: number) => {
-                const winnerPlayer = INITIAL_PLAYERS.find(p => p.name === h.winner);
+              {history.map((h: any, i: number) => {
+                const winnerPlayer = h.winnerPlayer;
                 return (
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -492,7 +569,8 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
 
 function Index() {
   const [autoRefresh, setAutoRefresh] = useState(true);
-  const { data: liveUpdates, refetch, isFetching } = useLiveData(INITIAL_PLAYERS, autoRefresh);
+  const { data: players = [], refetch, isFetching } = usePlayersData(autoRefresh);
+  const { data: tournamentsData } = useTournamentsData();
   const [activeTab, setActiveTab] = useState(0);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
@@ -511,10 +589,6 @@ function Index() {
     }
   };
 
-  // Check if any player is new
-  const newPlayer = useMemo(() => {
-    return INITIAL_PLAYERS.find(p => p.debutDate && new Date().getTime() - new Date(p.debutDate).getTime() < 5 * 24 * 60 * 60 * 1000);
-  }, []);
 
   // Countdown timer logic (48 hours, resets at 00:00 UTC)
   const [timeLeft, setTimeLeft] = useState({ d: "00", h: "00", m: "00", s: "00" });
@@ -537,19 +611,25 @@ function Index() {
   }, []);
 
   const mappedPlayers = useMemo(() => {
-    return INITIAL_PLAYERS.map((p: any) => {
-      const up = liveUpdates?.[p.id];
+    return players.map((p: any) => {
       return {
         ...p,
-        liveMcap: up?.marketCap || p.marketCap || 0,
-        livePrice: up?.price || p.price || 0,
-        liveChange: up?.change24h || p.change24h || 0,
-        liveBurned: up?.tokensBurned || p.tokensBurned || 0,
-        liveHolders: up?.holders || p.liveHolders || 0,
-        up: (up?.change24h || p.change24h || 0) >= 0
+        liveMcap: p.market_cap || 0,
+        livePrice: p.price || 0,
+        liveChange: p.change_24h || 0,
+        liveBurned: p.tokens_burned || 0,
+        liveHolders: p.live_holders || 0,
+        up: (p.change_24h || 0) >= 0,
+        ticker: p.ticker_symbol,
+        img: p.image_url
       };
     });
-  }, [liveUpdates]);
+  }, [players]);
+
+  // Check if any player is new (using mapped fields for img/ticker)
+  const newPlayer = useMemo(() => {
+    return mappedPlayers.find(p => p.debut_date && new Date().getTime() - new Date(p.debut_date).getTime() < 7 * 24 * 60 * 60 * 1000);
+  }, [mappedPlayers]);
 
   const totalMcap = mappedPlayers.reduce((sum, p) => sum + p.liveMcap, 0);
   const favPlayer = [...mappedPlayers].sort((a, b) => b.liveMcap - a.liveMcap)[0];
@@ -742,10 +822,10 @@ function Index() {
         <ChampionshipSection
           champ={CHAMPIONSHIPS[activeTab]}
           players={mappedPlayers}
+          tournamentsData={tournamentsData}
           autoRefresh={autoRefresh}
           setAutoRefresh={setAutoRefresh}
           index={0}
-          timeLeft={timeLeft}
           refetch={refetch}
           isFetching={isFetching}
         />
