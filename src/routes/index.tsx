@@ -523,168 +523,163 @@ function ChampionshipIntro() {
   const IconComponent = current.icon;
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-10">
-      {/* Outer Glowing Border Container (Double Border Effect) */}
+    <section className="mx-auto max-w-7xl px-6 py-12">
+      {/* Container with sharp corners, cream border, and solid box-shadow border */}
       <div 
-        className="relative overflow-hidden rounded-2xl border transition-all duration-500 bg-[#0A0A0B] p-[2px]"
+        className="relative transition-all duration-500 bg-[#0F0A15] border border-white/20 rounded-none overflow-hidden"
         style={{
-          borderColor: `${current.accent}40`,
-          boxShadow: `0 0 45px -10px rgba(${current.accentRgb}, 0.25), inset 0 0 20px rgba(${current.accentRgb}, 0.05)`,
+          boxShadow: `8px 8px 0px 0px ${current.accent}`,
         }}
       >
-        {/* Inner Card Container */}
+        {/* Dynamic Background Ambient Glow */}
         <div 
-          className="rounded-[14px] border bg-[#121316]/75 backdrop-blur-md p-6 h-full w-full relative overflow-hidden transition-all duration-500"
-          style={{
-            borderColor: `${current.accent}15`
-          }}
-        >
-          {/* Dynamic Background Ambient Glow */}
-          <div 
-            className="absolute -left-20 -top-20 h-72 w-72 rounded-full blur-[90px] opacity-20 pointer-events-none transition-all duration-500 animate-pulse" 
-            style={{ backgroundColor: current.accent }} 
-          />
-          <div 
-            className="absolute -right-20 -bottom-20 h-72 w-72 rounded-full blur-[90px] opacity-15 pointer-events-none transition-all duration-500" 
-            style={{ backgroundColor: current.accent }} 
-          />
+          className="absolute -left-20 -top-20 h-72 w-72 rounded-full blur-[100px] opacity-15 pointer-events-none transition-all duration-500" 
+          style={{ backgroundColor: current.accent }} 
+        />
 
-          {/* Top Header line */}
-          <div className="flex items-center justify-between border-b border-white/5 pb-4 mb-8 relative z-10">
-            <div className="flex items-center gap-2.5">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: current.accent }}></span>
-                <span className="relative inline-flex rounded-full h-2 w-2" style={{ backgroundColor: current.accent }}></span>
-              </span>
-              <span className="font-mono text-[10px] md:text-xs font-bold tracking-[0.2em] text-white uppercase">
-                LIVE • CHAMPIONSHIP OVERVIEW
-              </span>
-            </div>
-            <div className="font-mono text-[10px] md:text-xs font-bold tracking-[0.2em] text-muted-foreground uppercase bg-white/5 px-2.5 py-0.5 rounded-full border border-white/5">
-              STEP <span style={{ color: current.accent }} className="font-bold">{current.stepNum}</span> / 03
-            </div>
+        {/* 1. Top Header Sub-Bar */}
+        <div className="flex items-center justify-between border-b border-white/10 px-6 py-3.5 relative z-10">
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: current.accent }}></span>
+              <span className="relative inline-flex rounded-full h-2 w-2" style={{ backgroundColor: current.accent }}></span>
+            </span>
+            <span className="font-mono text-[10px] md:text-xs font-bold tracking-[0.25em] text-[#C5FF1A] uppercase">
+              LIVE • WORLD BULL CUP ECOSYSTEM
+            </span>
+          </div>
+          <div className="font-mono text-[10px] md:text-xs font-bold tracking-[0.2em] text-white/50 uppercase">
+            STEP <span style={{ color: current.accent }} className="font-bold">{current.stepNum}</span> / 03
+          </div>
+        </div>
+
+        {/* 2. Timeline Progress Sub-Bar */}
+        <div className="flex items-center justify-between px-6 sm:px-12 py-5 border-b border-white/10 relative z-10 select-none">
+          {/* Step 1 */}
+          <button 
+            onClick={() => setActiveStep(0)} 
+            className="flex items-center gap-2 focus:outline-none cursor-pointer group"
+          >
+            <div 
+              className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${activeStep >= 0 ? 'bg-[#EAB308]' : 'bg-white/10'}`}
+              style={activeStep === 0 ? { boxShadow: '0 0 10px #EAB308' } : {}}
+            />
+            <span className={`font-mono text-[9px] md:text-xs tracking-wider transition-colors uppercase ${activeStep === 0 ? 'text-[#EAB308] font-bold' : 'text-white/20 group-hover:text-white/50'}`}>
+              01 GOAT
+            </span>
+          </button>
+
+          {/* Line 1 -> 2 */}
+          <div className="flex-1 mx-4 h-[2px] bg-white/10 relative hidden xs:block">
+            <div 
+              className="absolute inset-0 transition-all duration-500" 
+              style={{ 
+                width: activeStep >= 1 ? '100%' : '0%', 
+                background: `linear-gradient(to right, #EAB308, #E8602C)`,
+                boxShadow: activeStep >= 1 ? '0 0 8px #E8602C' : 'none'
+              }} 
+            />
           </div>
 
-          {/* Steps/Timeline Bar */}
-          <div className="relative mb-12 mt-4 flex items-end justify-between px-4 sm:px-12">
-            {/* Progress Connector Lines - Centered behind the bottom dots */}
-            <div className="absolute left-12 right-12 bottom-[9px] h-[2.5px] bg-white/5 z-0 hidden sm:block">
-              {/* Active filled line with high glow */}
+          {/* Step 2 */}
+          <button 
+            onClick={() => setActiveStep(1)} 
+            className="flex items-center gap-2 focus:outline-none cursor-pointer group"
+          >
+            <div 
+              className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${activeStep >= 1 ? 'bg-[#E8602C]' : 'bg-white/10'}`}
+              style={activeStep === 1 ? { boxShadow: '0 0 10px #E8602C' } : {}}
+            />
+            <span className={`font-mono text-[9px] md:text-xs tracking-wider transition-colors uppercase ${activeStep === 1 ? 'text-[#E8602C] font-bold' : 'text-white/20 group-hover:text-white/50'}`}>
+              02 BURN
+            </span>
+          </button>
+
+          {/* Line 2 -> 3 */}
+          <div className="flex-1 mx-4 h-[2px] bg-white/10 relative hidden xs:block">
+            <div 
+              className="absolute inset-0 transition-all duration-500" 
+              style={{ 
+                width: activeStep >= 2 ? '100%' : '0%', 
+                background: `linear-gradient(to right, #E8602C, #4F8FE8)`,
+                boxShadow: activeStep >= 2 ? '0 0 8px #4F8FE8' : 'none'
+              }} 
+            />
+          </div>
+
+          {/* Step 3 */}
+          <button 
+            onClick={() => setActiveStep(2)} 
+            className="flex items-center gap-2 focus:outline-none cursor-pointer group"
+          >
+            <div 
+              className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${activeStep >= 2 ? 'bg-[#4F8FE8]' : 'bg-white/10'}`}
+              style={activeStep === 2 ? { boxShadow: '0 0 10px #4F8FE8' } : {}}
+            />
+            <span className={`font-mono text-[9px] md:text-xs tracking-wider transition-colors uppercase ${activeStep === 2 ? 'text-[#4F8FE8] font-bold' : 'text-white/20 group-hover:text-white/50'}`}>
+              03 HOLDERS
+            </span>
+          </button>
+        </div>
+
+        {/* 3. Main Content Sub-Box */}
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1.6fr] items-center gap-8 md:gap-10 p-6 md:p-10 relative z-10">
+          
+          {/* Left Block: Big Scanline Number & Icon */}
+          <div className="flex items-center justify-center gap-8 md:justify-end px-4 md:pr-4">
+            {/* Scanline Number */}
+            <div className="relative select-none shrink-0">
               <div 
-                className="h-full transition-all duration-500 rounded-full"
+                className="font-mono text-[90px] md:text-[130px] font-black leading-none select-none transition-all duration-500"
                 style={{
-                  width: `${activeStep === 0 ? '0%' : activeStep === 1 ? '50%' : '100%'}`,
-                  background: `linear-gradient(to right, ${INTRO_STEPS[0].accent}, ${current.accent})`,
-                  boxShadow: `0 0 15px 1px ${current.accent}`,
+                  color: current.accent,
+                  textShadow: `0 0 35px ${current.accent}70, 0 0 75px ${current.accent}25`,
+                  opacity: 0.95
+                }}
+              >
+                {current.stepNum}
+              </div>
+              {/* Retro scanline overlay */}
+              <div className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-40 bg-[linear-gradient(rgba(18,19,22,0)_50%,rgba(18,19,22,0.85)_50%)] bg-[length:100%_4px]" />
+            </div>
+
+            {/* Category Icon */}
+            <div 
+              className="p-4.5 rounded-2xl bg-black/45 border transition-all duration-500 shrink-0"
+              style={{
+                boxShadow: `inset 0 0 25px rgba(${current.accentRgb}, 0.1), 0 0 20px rgba(${current.accentRgb}, 0.1)`,
+                borderColor: `${current.accent}25`
+              }}
+            >
+              <IconComponent 
+                className="h-10 w-10 md:h-12 md:w-12 transition-all duration-500"
+                style={{
+                  color: current.accent,
+                  filter: `drop-shadow(0 0 10px ${current.accent}90)`
                 }}
               />
             </div>
-
-            {INTRO_STEPS.map((step, idx) => {
-              const isCompleted = idx < activeStep;
-              const isActive = idx === activeStep;
-              
-              let circleColor = "bg-[#121316] border-white/15";
-              let textColor = "text-muted-foreground/50";
-              let dotGlow = "";
-
-              if (isActive) {
-                circleColor = `border-[2px] bg-black`;
-                textColor = "text-white font-bold";
-                dotGlow = "shadow-[0_0_20px_rgba(255,255,255,0.9)]";
-              } else if (isCompleted) {
-                circleColor = `bg-white border-white`;
-                textColor = "text-white/80";
-              }
-
-              return (
-                <button 
-                  key={step.id} 
-                  onClick={() => setActiveStep(idx)}
-                  className="flex flex-col items-center relative z-10 group cursor-pointer focus:outline-none transition-all"
-                >
-                  {/* Step label - placed neatly ABOVE the dots */}
-                  <span 
-                    className={`font-mono text-[9px] md:text-xs tracking-wider transition-all duration-300 mb-3 ${textColor} group-hover:text-white`}
-                    style={isActive ? { color: step.accent, textShadow: `0 0 10px ${step.accent}60` } : {}}
-                  >
-                    <span className="hidden sm:inline mr-2.5">{step.stepNum}</span>{step.label}
-                  </span>
-
-                  {/* Step Circle */}
-                  <div 
-                    className={`h-5 w-5 rounded-full flex items-center justify-center transition-all duration-300 ${circleColor} ${dotGlow}`}
-                    style={isActive ? { borderColor: step.accent, boxShadow: `0 0 18px 2px ${step.accent}` } : isCompleted ? { backgroundColor: step.accent, borderColor: step.accent } : {}}
-                  >
-                    {/* Inside active dot */}
-                    {isActive && (
-                      <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: step.accent }} />
-                    )}
-                    {/* Completed dot style */}
-                    {isCompleted && (
-                      <div className="h-1.5 w-1.5 rounded-full bg-[#121316]" />
-                    )}
-                  </div>
-                </button>
-              );
-            })}
           </div>
 
-          {/* Content Box */}
-          <div className="grid grid-cols-1 md:grid-cols-[1.2fr_auto_2fr] items-center gap-8 md:gap-14 pt-4 pb-2 relative z-10">
-            {/* Big Number & Icon */}
-            <div className="flex items-center justify-center gap-10 md:gap-12 md:justify-end px-4 md:pr-4">
-              <div className="relative">
-                {/* Massive glowing number */}
-                <div 
-                  className="font-mono text-[90px] md:text-[120px] font-black leading-none select-none transition-all duration-500"
-                  style={{
-                    color: current.accent,
-                    textShadow: `0 0 35px ${current.accent}60, 0 0 70px ${current.accent}20`,
-                    opacity: 0.95
-                  }}
-                >
-                  {current.stepNum}
-                </div>
-              </div>
-              {/* The icon */}
-              <div 
-                className="p-4.5 rounded-2xl bg-black/40 border transition-all duration-500"
-                style={{
-                  boxShadow: `inset 0 0 25px rgba(${current.accentRgb}, 0.08), 0 0 20px rgba(${current.accentRgb}, 0.1)`,
-                  borderColor: `${current.accent}30`
-                }}
-              >
-                <IconComponent 
-                  className="h-10 w-10 md:h-12 md:w-12 transition-all duration-500"
-                  style={{
-                    color: current.accent,
-                    filter: `drop-shadow(0 0 10px ${current.accent}90)`
-                  }}
-                />
-              </div>
-            </div>
+          {/* Vertical Separator */}
+          <div className="hidden md:block w-px h-28 bg-white/10" />
 
-            {/* Vertical Separator */}
-            <div className="hidden md:block w-px h-28 bg-gradient-to-b from-white/5 via-white/10 to-white/5" style={{ background: `linear-gradient(to bottom, rgba(${current.accentRgb}, 0.02), rgba(${current.accentRgb}, 0.25), rgba(${current.accentRgb}, 0.02))` }} />
-
-            {/* Title & Desc */}
-            <div className="flex flex-col justify-center text-center md:text-left">
-              <motion.div
-                key={activeStep}
-                initial={{ opacity: 0, x: 25 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -25 }}
-                transition={{ duration: 0.4 }}
-              >
-                <h3 className="font-display text-2xl md:text-3.5xl font-extrabold text-white mb-3 uppercase tracking-wide">
-                  {current.title}
-                </h3>
-                <p className="text-xs md:text-sm text-muted-foreground/85 leading-relaxed max-w-xl">
-                  {current.desc}
-                </p>
-              </motion.div>
-            </div>
+          {/* Right Block: Title & Desc */}
+          <div className="flex flex-col justify-center text-center md:text-left">
+            <motion.div
+              key={activeStep}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.4 }}
+            >
+              <h3 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-4 uppercase tracking-wide">
+                {current.title}
+              </h3>
+              <p className="text-xs md:text-sm text-white/60 leading-relaxed max-w-xl">
+                {current.desc}
+              </p>
+            </motion.div>
           </div>
         </div>
       </div>
