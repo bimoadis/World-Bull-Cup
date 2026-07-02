@@ -29,6 +29,8 @@ serve(async (req) => {
 
     if (playersError) throw playersError
 
+    console.log("Database select players:", JSON.stringify(players, null, 2));
+
     // 2. Check if we need to fetch new data (cache invalidation = 30 seconds)
     let needsUpdate = false;
     for (const p of players) {
@@ -100,9 +102,11 @@ serve(async (req) => {
       // Artificial delay to respect 5 RPS (Wait 250ms -> ~4 requests per sec max)
       await new Promise(r => setTimeout(r, 250));
       
-      // 3b. Helius (Burned Tokens)
+      // 3b. Helius (Burned Tokens & Supply)
       if (p.contract && p.contract !== "Soon" && p.contract !== "TBA") {
         try {
+          // 3b-1. Balance in Incinerator
+          let burnedAmount = 0;
           const burnRes = await fetch(HELIUS_RPC, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -120,13 +124,65 @@ serve(async (req) => {
           
           if (burnRes.ok) {
             const burnData = await burnRes.json();
-            const burnedAmount = burnData?.result?.value?.[0]?.account?.data?.parsed?.info?.tokenAmount?.uiAmount || 0;
-            if (burnedAmount > 0) {
+            burnedAmount = burnData?.result?.value?.[0]?.account?.data?.parsed?.info?.tokenAmount?.uiAmount || 0;
+          }
+
+          // 3b-2. Decreased supply from burn instruction
+          const supplyRes = await fetch(HELIUS_RPC, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              id: '1',
+              method: 'getTokenSupply',
+              params: [ p.contract ]
+            })
+          });
+
+          if (supplyRes.ok) {
+            const supplyData = await supplyRes.json();
+            const currentSupply = supplyData?.result?.value?.uiAmount || 0;
+            if (currentSupply > 0) {
+              const supplyBurned = Math.max(0, 1_000_000_000 - currentSupply);
+              newStats.tokens_burned = supplyBurned + burnedAmount;
+            } else if (burnedAmount > 0) {
               newStats.tokens_burned = burnedAmount;
+            }
+          } else if (burnedAmount > 0) {
+            newStats.tokens_burned = burnedAmount;
+          }
+        } catch(e) {
+          console.warn("Helius fetch error for burned tokens:", p.id, e);
+        }
+      }
+
+      // 3c. Helius (Holder Count)
+      if (p.contract && p.contract !== "Soon" && p.contract !== "TBA") {
+        try {
+          const holdersRes = await fetch(HELIUS_RPC, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              id: '1',
+              method: 'getTokenAccounts',
+              params: {
+                mint: p.contract,
+                page: 1,
+                limit: 1
+              }
+            })
+          });
+          
+          if (holdersRes.ok) {
+            const holdersData = await holdersRes.json();
+            const totalHolders = holdersData?.result?.total;
+            if (typeof totalHolders === 'number' && totalHolders >= 0) {
+              newStats.live_holders = totalHolders;
             }
           }
         } catch(e) {
-          console.warn("Helius fetch error for", p.id);
+          console.warn("Helius fetch error for holders:", p.id, e);
         }
       }
       
