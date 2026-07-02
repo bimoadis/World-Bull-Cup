@@ -417,7 +417,7 @@ function ChampionshipSection({ champ, players, tournamentsData, autoRefresh, set
 
                   <div className="text-center relative z-10">
                     {b.isLive ? (
-                      <a href={b.contract && b.contract !== "Soon" && b.contract !== "TBA" ? `https://solscan.io/token/${b.contract}` : "https://solscan.io"} target="_blank" rel="noreferrer"
+                      <a href={b.contract && b.contract !== "Soon" && b.contract !== "TBA" ? `https://pump.fun/coin/${b.contract}` : "https://pump.fun"} target="_blank" rel="noreferrer"
                         className="inline-block rounded border px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-colors hover:opacity-90"
                         style={b.rank === 1
                           ? { borderColor: champ.accentHex, color: champ.accentHex, backgroundColor: `${champ.accentHex}15` }
