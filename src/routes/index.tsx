@@ -104,7 +104,7 @@ function Sparkline({ up }: { up: boolean }) {
 
 function MatchCard({ v, champ, delay, isFinal = false }: any) {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-20px" }}
@@ -236,7 +236,7 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
     const fa = w1[champ.metric] || 0;
     const fb = w2[champ.metric] || 0;
     const fTotal = fa + fb;
-    
+
     return {
       sf1,
       sf2,
@@ -288,7 +288,7 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
 
               {/* TABLE ROWS */}
               {ranked.map((b: any, index: number) => (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-10px" }}
@@ -371,7 +371,7 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
           </div>
 
           <div className="flex flex-col items-center relative w-full mt-4">
-            
+
             {/* ROUND 1 */}
             <div className="w-full flex flex-col lg:flex-row gap-6 lg:gap-12 justify-center items-center relative z-10">
               {/* SF 1 */}
@@ -397,12 +397,12 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
 
             {/* Connecting Lines Desktop */}
             <div className="hidden lg:flex w-full max-w-3xl justify-between px-32 mt-4 opacity-30 relative z-0">
-               <div className="w-1/2 h-12 border-t-2 border-l-2 border-white/50 rounded-tl-xl" />
-               <div className="w-1/2 h-12 border-t-2 border-r-2 border-white/50 rounded-tr-xl" />
+              <div className="w-1/2 h-12 border-t-2 border-l-2 border-white/50 rounded-tl-xl" />
+              <div className="w-1/2 h-12 border-t-2 border-r-2 border-white/50 rounded-tr-xl" />
             </div>
-            
+
             <div className="hidden lg:flex justify-center w-full relative z-0 -mt-12">
-                <div className="w-px h-16 bg-white/30" />
+              <div className="w-px h-16 bg-white/30" />
             </div>
 
             {/* FINAL */}
@@ -420,7 +420,7 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
             </div>
 
 
-            
+
           </div>
         </section>
 
@@ -436,7 +436,7 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
               {champ.history.map((h: any, i: number) => {
                 const winnerPlayer = INITIAL_PLAYERS.find(p => p.name === h.winner);
                 return (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true, margin: "-20px" }}
@@ -447,9 +447,9 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
                     <div className="flex items-center gap-3 md:gap-4">
                       {winnerPlayer && (
                         <div className="relative shrink-0">
-                          <img 
-                            src={winnerPlayer.img} 
-                            alt={winnerPlayer.name} 
+                          <img
+                            src={winnerPlayer.img}
+                            alt={winnerPlayer.name}
                             className="h-10 w-10 md:h-12 md:w-12 rounded-lg object-cover border border-white/10 shadow-sm"
                             loading="lazy"
                           />
@@ -483,37 +483,69 @@ function ChampionshipSection({ champ, players, autoRefresh, setAutoRefresh, inde
 
 const INTRO_STEPS = [
   {
-    id: "goat",
+    id: "claim",
     stepNum: "01",
-    label: "GOAT CUP",
-    title: "GOAT CHAMPIONSHIP",
-    desc: "Sorted by market capitalization. Every bull's valuation is live-tracked from DexScreener. Odds are calculated dynamically as the inverse of each coin's market-cap share. High cap means low odds, marking them the favorite to win.",
-    accent: "#EAB308", // gold
-    accentRgb: "234, 179, 8",
-    accentText: "text-gold",
-    icon: Trophy,
+    label: "CLAIM",
+    title: "CLAIM",
+    desc: "Every cycle, creator fees are claimed from every Player Token — including $LEOBULL, $CRBULL, $KYLBULL, $LAMIBULL and future Bull Tokens — then transferred to the transparent Treasury Wallet.",
+    highlight: "Trading across every Bull fuels the entire World Bull Cup ecosystem.",
+    accent: "#5BA3D0", // Lionel blue
+    accentRgb: "91, 163, 208",
+    accentText: "text-[#5BA3D0]",
+    icon: (props: any) => (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <path d="M12 17V3" />
+        <path d="m6 11 6 6 6-6" />
+        <path d="M19 21H5" />
+      </svg>
+    ),
   },
   {
-    id: "burn",
+    id: "buyback_burn",
     stepNum: "02",
-    label: "BURN CUP",
-    title: "BURN CHAMPIONSHIP",
-    desc: "Ranked by total tokens burned (absolute count sent to the burn address). The more supply a bull torches, the higher it climbs in the standings. Torching supply reduces circulating tokens, demonstrating pure community commitment.",
-    accent: "#E8602C", // fire
+    label: "BUYBACK & BURN",
+    title: "BUYBACK & BURN",
+    desc: "A dedicated portion of the Treasury market-buys $BULLCUP directly from the open market and permanently burns the purchased tokens, reducing circulating supply every cycle.",
+    highlight: "More Player Token activity → More Buybacks → More Burn.",
+    accent: "#E8602C", // burn fire orange
     accentRgb: "232, 96, 44",
     accentText: "text-[#E8602C]",
     icon: Flame,
   },
   {
-    id: "holders",
+    id: "treasury",
     stepNum: "03",
-    label: "HOLDERS CUP",
-    title: "HOLDER CHAMPIONSHIP",
-    desc: "Ranked by total holder count on-chain. The bull with the biggest crowd and strongest community behind it takes the crown. Every single wallet counts as we measure who has the largest army of believers.",
-    accent: "#4F8FE8", // blue
-    accentRgb: "79, 143, 232",
-    accentText: "text-[#4F8FE8]",
-    icon: Users,
+    label: "TREASURY",
+    title: "TREASURY",
+    desc: "All creator fees are stored inside an on-chain Treasury Wallet where every transaction can be publicly verified. The Treasury executes automated buybacks, burns and ecosystem allocations with complete transparency.",
+    highlight: "Every movement is proof on-chain.",
+    accent: "#A855F7", // wallet purple
+    accentRgb: "168, 85, 247",
+    accentText: "text-[#A855F7]",
+    showProofLink: true,
+    icon: (props: any) => (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+      </svg>
+    ),
+  },
+  {
+    id: "ecosystem_growth",
+    stepNum: "04",
+    label: "ECOSYSTEM GROWTH",
+    title: "ECOSYSTEM GROWTH",
+    desc: "The remaining Treasury allocation funds ecosystem growth through marketing campaigns, creator rewards, community events, partnerships and future Bull launches—expanding the World Bull Cup ecosystem over time.",
+    highlight: "Every new Bull strengthens the ecosystem.",
+    accent: "#EAB308", // goat gold
+    accentRgb: "234, 179, 8",
+    accentText: "text-[#EAB308]",
+    icon: (props: any) => (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <path d="M22 7 13.5 15.5 8.5 10.5 2 17" />
+        <path d="M16 7h6v6" />
+      </svg>
+    ),
   }
 ];
 
@@ -522,147 +554,184 @@ function ChampionshipIntro() {
   const current = INTRO_STEPS[activeStep];
   const IconComponent = current.icon;
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveStep((prev) => (prev + 1) % INTRO_STEPS.length);
+    }, 9000); // Auto-rotation every 6 seconds
+    return () => clearInterval(timer);
+  }, [activeStep]);
+
   return (
-    <section className="mx-auto max-w-7xl px-6 py-12">
-      {/* Container with sharp corners, cream border, and solid box-shadow border */}
-      <div 
-        className="relative transition-all duration-500 bg-[#0F0A15] border border-white/20 rounded-none overflow-hidden"
+    <section className="mx-auto max-w-7xl px-6 py-10">
+      {/* Container matching the rounded-xl border border-white/5 bg-[#121316] of Web Bull */}
+      <div
+        className="relative transition-all duration-500 bg-[#121316] border rounded-xl overflow-hidden"
         style={{
-          boxShadow: `8px 8px 0px 0px ${current.accent}`,
+          borderColor: `${current.accent}20`,
+          boxShadow: `0 12px 40px -12px rgba(0, 0, 0, 0.75), 0 0 20px ${current.accent}05`,
         }}
       >
         {/* Dynamic Background Ambient Glow */}
-        <div 
-          className="absolute -left-20 -top-20 h-72 w-72 rounded-full blur-[100px] opacity-15 pointer-events-none transition-all duration-500" 
-          style={{ backgroundColor: current.accent }} 
+        <div
+          className="absolute -left-20 -top-20 h-72 w-72 rounded-full blur-[100px] opacity-10 pointer-events-none transition-all duration-500"
+          style={{ backgroundColor: current.accent }}
         />
 
         {/* 1. Top Header Sub-Bar */}
-        <div className="flex items-center justify-between border-b border-white/10 px-6 py-3.5 relative z-10">
+        <div className="flex items-center justify-between border-b border-white/5 px-6 py-3.5 relative z-10 bg-white/[0.01]">
           <div className="flex items-center gap-2">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: current.accent }}></span>
               <span className="relative inline-flex rounded-full h-2 w-2" style={{ backgroundColor: current.accent }}></span>
             </span>
-            <span className="font-mono text-[10px] md:text-xs font-bold tracking-[0.25em] text-[#C5FF1A] uppercase">
-              LIVE • WORLD BULL CUP ECOSYSTEM
+            <span 
+              className="font-mono text-[10px] md:text-xs font-bold tracking-[0.25em] uppercase transition-colors duration-500"
+              style={{ color: current.accent }}
+            >
+              LIVE • $BULLCUP ECOSYSTEM
             </span>
           </div>
-          <div className="font-mono text-[10px] md:text-xs font-bold tracking-[0.2em] text-white/50 uppercase">
-            STEP <span style={{ color: current.accent }} className="font-bold">{current.stepNum}</span> / 03
+          <div className="font-mono text-[10px] md:text-xs font-bold tracking-[0.2em] text-muted-foreground uppercase">
+            STEP <span style={{ color: current.accent }} className="font-bold">{current.stepNum}</span> / 04
           </div>
         </div>
 
         {/* 2. Timeline Progress Sub-Bar */}
-        <div className="flex items-center justify-between px-6 sm:px-12 py-5 border-b border-white/10 relative z-10 select-none">
+        <div className="flex items-center justify-between px-6 sm:px-12 py-5 border-b border-white/5 relative z-10 select-none overflow-x-auto bg-white/[0.005]">
           {/* Step 1 */}
-          <button 
-            onClick={() => setActiveStep(0)} 
-            className="flex items-center gap-2 focus:outline-none cursor-pointer group"
+          <button
+            onClick={() => setActiveStep(0)}
+            className="flex items-center gap-2 focus:outline-none cursor-pointer group shrink-0"
           >
-            <div 
-              className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${activeStep >= 0 ? 'bg-[#EAB308]' : 'bg-white/10'}`}
-              style={activeStep === 0 ? { boxShadow: '0 0 10px #EAB308' } : {}}
+            <div
+              className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${activeStep >= 0 ? 'bg-[#5BA3D0]' : 'bg-white/10'}`}
+              style={activeStep === 0 ? { boxShadow: '0 0 10px #5BA3D0' } : {}}
             />
-            <span className={`font-mono text-[9px] md:text-xs tracking-wider transition-colors uppercase ${activeStep === 0 ? 'text-[#EAB308] font-bold' : 'text-white/20 group-hover:text-white/50'}`}>
-              01 GOAT
+            <span className={`font-mono text-[9px] md:text-xs tracking-wider transition-colors uppercase ${activeStep === 0 ? 'text-[#5BA3D0] font-bold' : 'text-white/20 group-hover:text-white/50'}`}>
+              01 CLAIM
             </span>
           </button>
 
           {/* Line 1 -> 2 */}
-          <div className="flex-1 mx-4 h-[2px] bg-white/10 relative hidden xs:block">
-            <div 
-              className="absolute inset-0 transition-all duration-500" 
-              style={{ 
-                width: activeStep >= 1 ? '100%' : '0%', 
-                background: `linear-gradient(to right, #EAB308, #E8602C)`,
+          <div className="flex-1 mx-4 h-[2px] bg-white/5 relative hidden xs:block min-w-[30px]">
+            <div
+              className="absolute inset-0 transition-all duration-500"
+              style={{
+                width: activeStep >= 1 ? '100%' : '0%',
+                background: `linear-gradient(to right, #5BA3D0, #E8602C)`,
                 boxShadow: activeStep >= 1 ? '0 0 8px #E8602C' : 'none'
-              }} 
+              }}
             />
           </div>
 
           {/* Step 2 */}
-          <button 
-            onClick={() => setActiveStep(1)} 
-            className="flex items-center gap-2 focus:outline-none cursor-pointer group"
+          <button
+            onClick={() => setActiveStep(1)}
+            className="flex items-center gap-2 focus:outline-none cursor-pointer group shrink-0"
           >
-            <div 
+            <div
               className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${activeStep >= 1 ? 'bg-[#E8602C]' : 'bg-white/10'}`}
               style={activeStep === 1 ? { boxShadow: '0 0 10px #E8602C' } : {}}
             />
             <span className={`font-mono text-[9px] md:text-xs tracking-wider transition-colors uppercase ${activeStep === 1 ? 'text-[#E8602C] font-bold' : 'text-white/20 group-hover:text-white/50'}`}>
-              02 BURN
+              02 BUYBACK & BURN
             </span>
           </button>
 
           {/* Line 2 -> 3 */}
-          <div className="flex-1 mx-4 h-[2px] bg-white/10 relative hidden xs:block">
-            <div 
-              className="absolute inset-0 transition-all duration-500" 
-              style={{ 
-                width: activeStep >= 2 ? '100%' : '0%', 
-                background: `linear-gradient(to right, #E8602C, #4F8FE8)`,
-                boxShadow: activeStep >= 2 ? '0 0 8px #4F8FE8' : 'none'
-              }} 
+          <div className="flex-1 mx-4 h-[2px] bg-white/5 relative hidden xs:block min-w-[30px]">
+            <div
+              className="absolute inset-0 transition-all duration-500"
+              style={{
+                width: activeStep >= 2 ? '100%' : '0%',
+                background: `linear-gradient(to right, #E8602C, #A855F7)`,
+                boxShadow: activeStep >= 2 ? '0 0 8px #A855F7' : 'none'
+              }}
             />
           </div>
 
           {/* Step 3 */}
-          <button 
-            onClick={() => setActiveStep(2)} 
-            className="flex items-center gap-2 focus:outline-none cursor-pointer group"
+          <button
+            onClick={() => setActiveStep(2)}
+            className="flex items-center gap-2 focus:outline-none cursor-pointer group shrink-0"
           >
-            <div 
-              className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${activeStep >= 2 ? 'bg-[#4F8FE8]' : 'bg-white/10'}`}
-              style={activeStep === 2 ? { boxShadow: '0 0 10px #4F8FE8' } : {}}
+            <div
+              className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${activeStep >= 2 ? 'bg-[#A855F7]' : 'bg-white/10'}`}
+              style={activeStep === 2 ? { boxShadow: '0 0 10px #A855F7' } : {}}
             />
-            <span className={`font-mono text-[9px] md:text-xs tracking-wider transition-colors uppercase ${activeStep === 2 ? 'text-[#4F8FE8] font-bold' : 'text-white/20 group-hover:text-white/50'}`}>
-              03 HOLDERS
+            <span className={`font-mono text-[9px] md:text-xs tracking-wider transition-colors uppercase ${activeStep === 2 ? 'text-[#A855F7] font-bold' : 'text-white/20 group-hover:text-white/50'}`}>
+              03 TREASURY
+            </span>
+          </button>
+
+          {/* Line 3 -> 4 */}
+          <div className="flex-1 mx-4 h-[2px] bg-white/5 relative hidden xs:block min-w-[30px]">
+            <div
+              className="absolute inset-0 transition-all duration-500"
+              style={{
+                width: activeStep >= 3 ? '100%' : '0%',
+                background: `linear-gradient(to right, #A855F7, #EAB308)`,
+                boxShadow: activeStep >= 3 ? '0 0 8px #EAB308' : 'none'
+              }}
+            />
+          </div>
+
+          {/* Step 4 */}
+          <button
+            onClick={() => setActiveStep(3)}
+            className="flex items-center gap-2 focus:outline-none cursor-pointer group shrink-0"
+          >
+            <div
+              className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${activeStep >= 3 ? 'bg-[#EAB308]' : 'bg-white/10'}`}
+              style={activeStep === 3 ? { boxShadow: '0 0 10px #EAB308' } : {}}
+            />
+            <span className={`font-mono text-[9px] md:text-xs tracking-wider transition-colors uppercase ${activeStep === 3 ? 'text-[#EAB308] font-bold' : 'text-white/20 group-hover:text-white/50'}`}>
+              04 ECOSYSTEM GROWTH
             </span>
           </button>
         </div>
 
         {/* 3. Main Content Sub-Box */}
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1.6fr] items-center gap-8 md:gap-10 p-6 md:p-10 relative z-10">
-          
+
           {/* Left Block: Big Scanline Number & Icon */}
           <div className="flex items-center justify-center gap-8 md:justify-end px-4 md:pr-4">
             {/* Scanline Number */}
             <div className="relative select-none shrink-0">
-              <div 
+              <div
                 className="font-mono text-[90px] md:text-[130px] font-black leading-none select-none transition-all duration-500"
                 style={{
                   color: current.accent,
-                  textShadow: `0 0 35px ${current.accent}70, 0 0 75px ${current.accent}25`,
+                  textShadow: `0 0 30px ${current.accent}50, 0 0 60px ${current.accent}15`,
                   opacity: 0.95
                 }}
               >
                 {current.stepNum}
               </div>
               {/* Retro scanline overlay */}
-              <div className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-40 bg-[linear-gradient(rgba(18,19,22,0)_50%,rgba(18,19,22,0.85)_50%)] bg-[length:100%_4px]" />
+              <div className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-30 bg-[linear-gradient(rgba(18,19,22,0)_50%,rgba(18,19,22,0.85)_50%)] bg-[length:100%_4px]" />
             </div>
 
             {/* Category Icon */}
-            <div 
-              className="p-4.5 rounded-2xl bg-black/45 border transition-all duration-500 shrink-0"
+            <div
+              className="p-4 rounded-lg bg-[#1a1b20] border transition-all duration-500 shrink-0"
               style={{
-                boxShadow: `inset 0 0 25px rgba(${current.accentRgb}, 0.1), 0 0 20px rgba(${current.accentRgb}, 0.1)`,
-                borderColor: `${current.accent}25`
+                boxShadow: `0 4px 12px rgba(0, 0, 0, 0.2), 0 0 15px ${current.accent}08`,
+                borderColor: `${current.accent}20`
               }}
             >
-              <IconComponent 
+              <IconComponent
                 className="h-10 w-10 md:h-12 md:w-12 transition-all duration-500"
                 style={{
                   color: current.accent,
-                  filter: `drop-shadow(0 0 10px ${current.accent}90)`
+                  filter: `drop-shadow(0 0 10px ${current.accent}80)`
                 }}
               />
             </div>
           </div>
 
           {/* Vertical Separator */}
-          <div className="hidden md:block w-px h-28 bg-white/10" />
+          <div className="hidden md:block w-px h-28 bg-white/5" />
 
           {/* Right Block: Title & Desc */}
           <div className="flex flex-col justify-center text-center md:text-left">
@@ -672,13 +741,50 @@ function ChampionshipIntro() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.4 }}
+              className="flex flex-col animate-fade-in"
             >
               <h3 className="font-display text-3xl md:text-4xl font-extrabold text-white mb-4 uppercase tracking-wide">
                 {current.title}
               </h3>
-              <p className="text-xs md:text-sm text-white/60 leading-relaxed max-w-xl">
+              <p className="text-xs md:text-sm text-muted-foreground leading-relaxed max-w-xl">
                 {current.desc}
               </p>
+
+              {/* Highlight & action buttons aligned inline */}
+              <div className="mt-5 flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-3">
+                <span
+                  className="font-semibold text-xs md:text-sm"
+                  style={{ color: current.accent }}
+                >
+                  {current.highlight}
+                </span>
+
+                {current.showProofLink && (
+                  <a
+                    href="https://solscan.io"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-[10px] font-bold tracking-wider uppercase font-mono transition-all duration-300 hover:opacity-90"
+                    style={{
+                      borderColor: `${current.accent}30`,
+                      color: current.accent,
+                      backgroundColor: `${current.accent}08`,
+                      boxShadow: `0 4px 12px rgba(0, 0, 0, 0.1), 0 0 10px ${current.accent}05`,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = `${current.accent}15`;
+                      e.currentTarget.style.borderColor = current.accent;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = `${current.accent}08`;
+                      e.currentTarget.style.borderColor = `${current.accent}30`;
+                    }}
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full animate-ping" style={{ backgroundColor: current.accent }} />
+                    Track On-Chain Proof
+                  </a>
+                )}
+              </div>
             </motion.div>
           </div>
         </div>
@@ -781,10 +887,10 @@ function Index() {
           <div className="flex items-center gap-3 md:gap-4">
             <a href="https://x.com/WorldBullCup" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-white transition-colors" aria-label="X (Twitter)">
               <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
               </svg>
             </a>
-            <a href="https://pump.fun" target="_blank" rel="noreferrer" className="hidden items-center gap-2 rounded border border-gold/30 bg-transparent px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-gold transition-colors hover:bg-gold/10 sm:inline-flex">
+            <a href="https://pump.fun/coin/8UNLWZC5AT1yAhjXp6bDTXSqBqKJnDpqdsHAG8Xppump" target="_blank" rel="noreferrer" className="hidden items-center gap-2 rounded border border-gold/30 bg-transparent px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-gold transition-colors hover:bg-gold/10 sm:inline-flex">
               Trade <Zap className="h-3.5 w-3.5 fill-gold" />
             </a>
             {walletAddress ? (
@@ -808,7 +914,7 @@ function Index() {
 
       <main>
         {/* HERO SECTION */}
-        <motion.section 
+        <motion.section
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
@@ -868,7 +974,7 @@ function Index() {
 
         {/* NEW PLAYER BANNER */}
         {newPlayer && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
@@ -995,7 +1101,7 @@ function Index() {
               <ul className="space-y-4 text-xs text-muted-foreground">
                 <li><a href="https://x.com/WorldBullCup" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Twitter / X</a></li>
                 <li><a href="https://dexscreener.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">DexScreener</a></li>
-                <li><a href="https://pump.fun" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Pump.fun</a></li>
+                <li><a href="https://pump.fun/coin/8UNLWZC5AT1yAhjXp6bDTXSqBqKJnDpqdsHAG8Xppump" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Pump.fun</a></li>
               </ul>
             </div>
 
